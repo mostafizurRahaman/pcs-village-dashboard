@@ -1,15 +1,8 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
-
+import { TanstackQueryProvider } from "@/components/TanstackQueryProvider"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
-
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+import { inter } from "@/fonts"
+import { cn } from "@/lib/utils"
 
 export default function RootLayout({
   children,
@@ -20,10 +13,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
+      className={cn("antialiased", inter.variable)}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <TanstackQueryProvider>{children}</TanstackQueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
