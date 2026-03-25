@@ -19,7 +19,7 @@ export const getColumns = (
         <DataTableColumnHeader column={column} title="USER ID" />
       ),
       cell: ({ row }) => (
-        <Typography variant="Regular_H6" className="text-[#1f3a5f]">
+        <Typography variant="Regular_H6" className="text-foreground">
           {row.getValue("id")}
         </Typography>
       ),
@@ -32,12 +32,12 @@ export const getColumns = (
       ),
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#556b2f] flex items-center justify-center shrink-0">
-            <Typography variant="Regular_H6" className="text-white">
+          <div className="w-8 h-8 rounded-full bg-success flex items-center justify-center shrink-0">
+            <Typography variant="Regular_H6" className="text-success-foreground">
               {row.original.initial}
             </Typography>
           </div>
-          <Typography variant="Medium_H6" className="text-[#1f3a5f]">
+          <Typography variant="Medium_H6" className="text-foreground">
             {row.getValue("name")}
           </Typography>
         </div>
@@ -50,7 +50,7 @@ export const getColumns = (
         <DataTableColumnHeader column={column} title="EMAIL" />
       ),
       cell: ({ row }) => (
-        <Typography variant="Regular_H6" className="text-[#717182]">
+        <Typography variant="Regular_H6" className="text-muted-foreground">
           {row.getValue("email")}
         </Typography>
       ),
@@ -62,7 +62,7 @@ export const getColumns = (
         <DataTableColumnHeader column={column} title="BRANCH" />
       ),
       cell: ({ row }) => (
-        <Typography variant="Regular_H6" className="text-[#1f3a5f]">
+        <Typography variant="Regular_H6" className="text-foreground">
           {row.getValue("branch")}
         </Typography>
       ),
@@ -74,7 +74,7 @@ export const getColumns = (
         <DataTableColumnHeader column={column} title="DUTY STATION" />
       ),
       cell: ({ row }) => (
-        <Typography variant="Regular_H6" className="text-[#1f3a5f]">
+        <Typography variant="Regular_H6" className="text-foreground">
           {row.getValue("dutyStation")}
         </Typography>
       ),
@@ -86,7 +86,7 @@ export const getColumns = (
         <DataTableColumnHeader column={column} title="PCS TIMELINE" />
       ),
       cell: ({ row }) => (
-        <Typography variant="Regular_H6" className="text-[#1f3a5f]">
+        <Typography variant="Regular_H6" className="text-foreground">
           {row.getValue("pcsTimeline")}
         </Typography>
       ),
@@ -101,16 +101,16 @@ export const getColumns = (
         const isVerified = row.getValue("verified") as boolean;
         if (isVerified) {
           return (
-            <div className="bg-[#00a63e] rounded-full inline-flex items-center px-2.5 py-1 gap-1.5 h-[22px]">
-              <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-              <Typography variant="Regular_H7" className="text-white leading-none !text-[12px]">Verified</Typography>
+            <div className="bg-success rounded-full inline-flex items-center px-2.5 py-1 gap-1.5 h-[22px]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-success-foreground" />
+              <Typography variant="Regular_H7" className="text-success-foreground leading-none !text-[12px]">Verified</Typography>
             </div>
           )
         }
         return (
-          <div className="border border-[rgba(0,0,0,0.1)] rounded-full inline-flex items-center px-2.5 py-1 gap-1.5 h-[22px]">
-            <XCircle className="w-3.5 h-3.5 text-[#1f3a5f]" />
-            <Typography variant="Regular_H7" className="text-[#1f3a5f] leading-none !text-[12px]">Not Verified</Typography>
+          <div className="border border-border rounded-full inline-flex items-center px-2.5 py-1 gap-1.5 h-[22px]">
+            <XCircle className="w-3.5 h-3.5 text-foreground" />
+            <Typography variant="Regular_H7" className="text-foreground leading-none !text-[12px]">Not Verified</Typography>
           </div>
         )
       },
@@ -125,14 +125,14 @@ export const getColumns = (
         const status = row.getValue("status") as string;
         if (status === "Active") {
           return (
-            <div className="bg-[#00a63e] rounded-full inline-flex items-center px-2.5 py-1 h-[22px]">
-              <Typography variant="Regular_H7" className="text-white leading-none !text-[12px]">Active</Typography>
+            <div className="bg-success rounded-full inline-flex items-center px-2.5 py-1 h-[22px]">
+              <Typography variant="Regular_H7" className="text-success-foreground leading-none !text-[12px]">Active</Typography>
             </div>
           )
         }
         return (
-          <div className="bg-[#d4183d] rounded-full inline-flex items-center px-2.5 py-1 h-[22px]">
-            <Typography variant="Regular_H7" className="text-white leading-none !text-[12px]">Suspended</Typography>
+          <div className="bg-destructive rounded-full inline-flex items-center px-2.5 py-1 h-[22px]">
+            <Typography variant="Regular_H7" className="text-destructive-foreground leading-none !text-[12px]">Suspended</Typography>
           </div>
         )
       },
@@ -163,7 +163,7 @@ export const getColumns = (
               table.toggleAllPageRowsSelected(!!value)
             }
             aria-label="Select all"
-            className="translate-y-0.5 cursor-pointer"
+            className="translate-y-0.5 cursor-pointer border-border"
           />
         ),
         cell: ({ row }) => (
@@ -176,7 +176,7 @@ export const getColumns = (
               }
             }}
             aria-label="Select row"
-            className="translate-y-0.5 cursor-pointer"
+            className="translate-y-0.5 cursor-pointer border-border"
           />
         ),
         enableSorting: false,

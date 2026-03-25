@@ -28,6 +28,10 @@ const fetchByIdsFn = async (ids: string[] | number[]): Promise<User[]> => {
           role: user.role,
           status: user.status,
           lastLogin: user.lastLogin,
+          branch: user.branch,
+          dutyStation: user.dutyStation,
+          pcsTimeline: user.pcsTimeline,
+          verified: user.verified,
         }) as User
     ) || []
   )

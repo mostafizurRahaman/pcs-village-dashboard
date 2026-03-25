@@ -5,7 +5,8 @@ import { Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/typography"
 import { BulkDeletePopup } from "./actions/bulk-delete"
-import { FilterModal } from "./actions/filter"
+
+import { cn } from "@/lib/utils"
 
 interface ToolbarOptionsProps {
   selectedUsers: { id: string; name: string }[]
@@ -24,7 +25,9 @@ export const ToolbarOptions = ({
 
   return (
     <div className="flex items-center gap-2">
-      <FilterModal />
+
+
+
 
       {totalSelectedCount > 0 && (
         <>
@@ -32,7 +35,9 @@ export const ToolbarOptions = ({
             variant="outline"
             size="sm"
             onClick={() => setDeleteDialogOpen(true)}
-            className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+            className={cn(
+              "border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+            )}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             <Typography variant="Medium_H7">

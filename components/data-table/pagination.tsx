@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState, useEffect } from "react";
 
 const getButtonSizeClass = (size: 'sm' | 'default' | 'lg') => {
   switch (size) {
@@ -43,17 +42,6 @@ export function DataTablePagination<TData>({
   // Convert 'lg' size to 'default' for SelectTrigger since it only accepts 'sm' | 'default'
   const selectSize = size === 'lg' ? 'default' : size;
 
-  // Local state for page size to ensure immediate UI updates
-  const [localPageSize, setLocalPageSize] = useState(table.getState().pagination.pageSize);
-
-  // Sync local state with table state
-  useEffect(() => {
-    const tablePageSize = table.getState().pagination.pageSize;
-    if (tablePageSize !== localPageSize) {
-      setLocalPageSize(tablePageSize);
-    }
-  }, [table.getState().pagination.pageSize, localPageSize]);
-
   return (
     <div className="flex w-full flex-col items-center justify-between gap-4 overflow-auto px-2 py-1 sm:flex-row sm:gap-8">
       <div className="flex-1 text-sm text-muted-foreground">
@@ -65,7 +53,7 @@ export function DataTablePagination<TData>({
             Rows per page
           </p>
           <Select
-            value={`${localPageSize}`}
+            value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
               // Validate the input value
               const numericValue = parseInt(value, 10);
@@ -73,29 +61,28 @@ export function DataTablePagination<TData>({
                 console.error(`Invalid page size value: ${value}`);
                 return;
               }
-
+              
               try {
-                // Update local state immediately for UI responsiveness
-                setLocalPageSize(numericValue);
-
-                // Update table state
-                table.setPagination({
-                  pageIndex: 0, // Reset to first page
-                  pageSize: numericValue
-                });
-
-                // Then update URL to keep it in sync
+                // Force URL update via direct window manipulation first
+                // This ensures the URL gets updated before the table state changes
                 const url = new URL(window.location.href);
                 url.searchParams.set('pageSize', value);
                 url.searchParams.set('page', '1'); // Always reset to page 1
                 window.history.replaceState({}, '', url.toString());
+                
+                // Then use the table's pagination change handler to update table state
+                // This order ensures the URL is already set when the table state updates
+                table.setPagination({
+                  pageIndex: 0, // Reset to first page
+                  pageSize: numericValue
+                });
               } catch (error) {
                 console.error('Error updating pagination:', error);
               }
             }}
           >
-            <SelectTrigger className="cursor-pointer">
-              <SelectValue placeholder={localPageSize} />
+            <SelectTrigger className="cursor-pointer" size={selectSize}>
+              <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top" className="cursor-pointer">
               {pageSizeOptions.map((pageSize) => (

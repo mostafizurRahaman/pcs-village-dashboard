@@ -20,7 +20,7 @@ export default function UsersPage() {
         {/* Header Section */}
         <div className="flex items-center justify-between">
           <div>
-            <Typography variant="Bold_H2" className="text-white">
+            <Typography variant="Bold_H2" className="text-foreground">
               User Management
             </Typography>
             <Typography variant="Regular_H6" className="text-muted-foreground">

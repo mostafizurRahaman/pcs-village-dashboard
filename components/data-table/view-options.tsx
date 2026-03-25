@@ -97,7 +97,7 @@ export function DataTableViewOptions<TData>({
   const handleColumnVisibilityToggle = useCallback((columnId: string) => {
     const currentVisibility = table.getState().columnVisibility;
     const isCurrentlyVisible = currentVisibility[columnId] !== false;
-    
+
     table.setColumnVisibility({
       ...currentVisibility,
       [columnId]: !isCurrentlyVisible,
@@ -176,7 +176,7 @@ export function DataTableViewOptions<TData>({
       <PopoverTrigger asChild>
         <Button
           aria-label="Toggle columns"
-          variant="outline" 
+          variant="outline"
           size={size}
           className="ml-auto hidden lg:flex"
         >

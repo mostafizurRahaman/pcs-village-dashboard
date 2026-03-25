@@ -28,16 +28,16 @@ export function DataTableRowActions<TData>({
   return (
     <>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={() => setViewDialogOpen(true)} className="h-8 w-8 text-[#1f3a5f] hover:bg-slate-100 rounded-[6px]">
+        <Button variant="ghost" size="icon" onClick={() => setViewDialogOpen(true)} className="h-8 w-8 text-foreground hover:bg-muted rounded-[6px]">
           <Eye className="w-[18px] h-[18px]" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-[#1f3a5f] hover:bg-slate-100 rounded-[6px]">
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground hover:bg-muted rounded-[6px]">
           {user.verified ? <XCircle className="w-[18px] h-[18px]" /> : <CheckCircle2 className="w-[18px] h-[18px]" />}
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-[#1f3a5f] hover:bg-slate-100 rounded-[6px]">
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground hover:bg-muted rounded-[6px]">
           <UserX className="w-[18px] h-[18px]" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => setDeleteDialogOpen(true)} className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-[6px]">
+        <Button variant="ghost" size="icon" onClick={() => setDeleteDialogOpen(true)} className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-[6px]">
           <Trash2 className="w-[18px] h-[18px]" />
         </Button>
       </div>

@@ -5,6 +5,9 @@ export type User = {
   branch: string
   dutyStation: string
   pcsTimeline: string
+  lastLogin: string; 
+  role: string;
+  
   verified: boolean
   status: "Active" | "Suspended"
   initial?: string

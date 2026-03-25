@@ -1,3 +1,5 @@
+import { ensureUrlStateHistoryPatched } from "./history-sync";
+
 type TypedArray = Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array;
 
 // Define a type for comparing values that can handle most common types
@@ -95,7 +97,7 @@ export function isDeepEqual(a: Comparable, b: Comparable): boolean {
     // Handle arrays more efficiently
     if (Array.isArray(a)) {
       if (!Array.isArray(b) || a.length !== b.length) return false;
-      
+
       // For small arrays, use direct comparison
       if (a.length < 20) {
         for (let i = 0; i < a.length; i++) {
@@ -103,25 +105,26 @@ export function isDeepEqual(a: Comparable, b: Comparable): boolean {
         }
         return true;
       }
-      
-      // For larger arrays, handle simple values quickly first
-      const sortedA = [...a].sort(); 
-      const sortedB = [...b].sort();
-      
-      // First do a quick comparison of primitives
-      for (let i = 0; i < sortedA.length; i++) {
-        const itemA = sortedA[i];
-        const itemB = sortedB[i];
-        if (typeof itemA !== 'object' && typeof itemB !== 'object') {
-          if (itemA !== itemB) return false;
+
+      // For larger arrays, check if they contain only primitives
+      const hasPrimitiveValues = a.every(item => typeof item !== 'object' || item === null);
+
+      if (hasPrimitiveValues) {
+        // Only sort arrays containing primitives
+        const sortedA = [...a].sort();
+        const sortedB = [...b].sort();
+
+        // Quick comparison of primitives
+        for (let i = 0; i < sortedA.length; i++) {
+          if (sortedA[i] !== sortedB[i]) return false;
         }
       }
-      
-      // Then compare actual positions
+
+      // Compare actual positions for all arrays
       for (let i = 0; i < a.length; i++) {
         if (!compare(a[i] as Comparable, b[i] as Comparable)) return false;
       }
-      
+
       return true;
     }
     
@@ -242,7 +245,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
 
   return (...args: Parameters<T>) => {
     const later = () => {
@@ -257,9 +260,17 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 
 /**
  * Reset URL parameters by removing all query parameters
- * @param router Next.js router instance
- * @param pathname Current pathname
+ * @param pathname Optional pathname override (defaults to current `window.location.pathname`)
  */
-export function resetUrlState(router: { replace: (path: string) => void }, pathname: string): void {
-  router.replace(pathname);
+export function resetUrlState(pathname?: string): void {
+  if (typeof window === "undefined") return;
+
+  // Make sure `history.replaceState` emits our url-state event.
+  ensureUrlStateHistoryPatched();
+
+  const nextPathname = pathname ?? window.location.pathname;
+  const hash = window.location.hash;
+  const nextUrl = `${nextPathname}${hash}`;
+
+  window.history.replaceState(window.history.state, "", nextUrl);
 }
