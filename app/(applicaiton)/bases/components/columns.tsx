@@ -4,17 +4,14 @@ import { ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/components/data-table/column-header"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Typography } from "@/components/typography"
-
 import { DataTableRowActions } from "./row-actions"
-import { User } from "@/types/user"
-import { CheckCircle2, XCircle } from "lucide-react"
-import { VerificatinStatus } from "@/components/batches/verification-status"
-import { UserStatus } from "@/components/batches/user-status"
+
+import { IBase } from "@/types/bases"
 
 export const getColumns = (
   handleRowDeselection: ((rowId: string) => void) | null | undefined
-): ColumnDef<User>[] => {
-  const baseColumns: ColumnDef<User>[] = [
+): ColumnDef<IBase>[] => {
+  const baseColumns: ColumnDef<IBase>[] = [
     {
       accessorKey: "id",
       header: ({ column }) => (
@@ -28,103 +25,68 @@ export const getColumns = (
       size: 100,
     },
     {
-      accessorKey: "name",
+      accessorKey: "baseName",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="NAME" />
+        <DataTableColumnHeader column={column} title="Base Name" />
       ),
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-success">
-            <Typography
-              variant="Regular_H6"
-              className="text-success-foreground"
-            >
-              {row.original.initial}
-            </Typography>
-          </div>
           <Typography variant="Medium_H6" className="text-foreground">
-            {row.getValue("name")}
+            {row.getValue("baseName")}
           </Typography>
         </div>
       ),
       size: 200,
     },
+
     {
-      accessorKey: "email",
+      accessorKey: "country",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="EMAIL" />
-      ),
-      cell: ({ row }) => (
-        <Typography variant="Regular_H6" className="text-muted-foreground">
-          {row.getValue("email")}
-        </Typography>
-      ),
-      size: 220,
-    },
-    {
-      accessorKey: "branch",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="BRANCH" />
+        <DataTableColumnHeader column={column} title="Country" />
       ),
       cell: ({ row }) => (
         <Typography variant="Regular_H6" className="text-foreground">
-          {row.getValue("branch")}
+          {row.getValue("country")}
         </Typography>
       ),
       size: 130,
     },
     {
-      accessorKey: "dutyStation",
+      accessorKey: "state",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="DUTY STATION" />
+        <DataTableColumnHeader column={column} title="State" />
       ),
       cell: ({ row }) => (
         <Typography variant="Regular_H6" className="text-foreground">
-          {row.getValue("dutyStation")}
+          {row.getValue("state")}
         </Typography>
       ),
       size: 200,
     },
     {
-      accessorKey: "pcsTimeline",
+      accessorKey: "city",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="PCS TIMELINE" />
+        <DataTableColumnHeader column={column} title="City" />
       ),
       cell: ({ row }) => (
         <Typography variant="Regular_H6" className="text-foreground">
-          {row.getValue("pcsTimeline")}
+          {row.getValue("city")}
         </Typography>
       ),
       size: 130,
     },
-    {
-      accessorKey: "verified",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="VERIFIED" />
-      ),
-      cell: ({ row }) => {
-        const isVerified = row.getValue("verified") as boolean
 
-        return (
-          <VerificatinStatus
-            status={isVerified ? "verified" : "unverified"}
-            className="h-6 w-25 font-medium"
-          />
-        )
-      },
-      size: 150,
-    },
-    {
-      accessorKey: "status",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="STATUS" />
-      ),
-      cell: ({ row }) => {
-        const status = row.getValue("status") as string
-        return <UserStatus status={status} className="h-6 w-25 font-medium" />
-      },
-      size: 130,
-    },
+    // {
+    //   accessorKey: "status",
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title="STATUS" />
+    //   ),
+    //   cell: ({ row }) => {
+    //     const status = row.getValue("status") as string
+    //     return <UserStatus status={status} className="h-6 w-25 font-medium" />
+    //   },
+    //   size: 130,
+    // },
     {
       id: "actions",
       header: ({ column }) => (
@@ -132,7 +94,6 @@ export const getColumns = (
       ),
       cell: ({ row, table }) => <DataTableRowActions row={row} table={table} />,
       size: 200,
-      minSize: 200,
     },
   ]
 

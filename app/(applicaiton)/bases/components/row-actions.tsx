@@ -3,10 +3,12 @@
 import * as React from "react"
 import { Row, Table } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { Eye, XCircle, UserX, Trash2, CheckCircle2 } from "lucide-react"
-import { User } from "@/types/user"
-import { DeleteUserPopup } from "./actions/delete-user"
-import { ViewUserModal } from "./actions/view-user"
+import { Trash2, Edit } from "lucide-react"
+import { DeleteUserPopup } from "./actions/delete-base"
+
+import { IBase } from "@/types/bases"
+import { EditBaseModal } from "./actions/edit-base"
+import { toast } from "sonner"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -18,8 +20,8 @@ export function DataTableRowActions<TData>({
   table,
 }: DataTableRowActionsProps<TData>) {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
-  const [viewDialogOpen, setViewDialogOpen] = React.useState(false)
-  const user = row.original as User
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false)
+  const base = row.original as IBase
 
   const resetSelection = () => {
     table.resetRowSelection()
@@ -31,29 +33,12 @@ export function DataTableRowActions<TData>({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setViewDialogOpen(true)}
+          onClick={() => setEditDialogOpen(true)}
           className="h-8 w-8 rounded-[6px] text-foreground hover:bg-muted"
         >
-          <Eye className="size-4.5" />
+          <Edit className="size-4.5" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-[6px] text-foreground hover:bg-muted"
-        >
-          {user.verified ? (
-            <XCircle className="size-4.5" />
-          ) : (
-            <CheckCircle2 className="size-4.5" />
-          )}
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-[6px] text-foreground hover:bg-muted"
-        >
-          <UserX className="size-4.5" />
-        </Button>
+
         <Button
           variant="ghost"
           size="icon"
@@ -64,16 +49,22 @@ export function DataTableRowActions<TData>({
         </Button>
       </div>
 
-      <ViewUserModal
-        open={viewDialogOpen}
-        onOpenChange={setViewDialogOpen}
-        user={user}
-      />
       <DeleteUserPopup
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        user={user}
+        base={base}
         onSuccess={resetSelection}
+      />
+
+      <EditBaseModal
+        base={base}
+        onOpenChange={() => {
+          setEditDialogOpen((prev) => !prev)
+        }}
+        open={editDialogOpen}
+        onSuccess={() => {
+          toast.success("Based updated successfully!")
+        }}
       />
     </>
   )

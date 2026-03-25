@@ -3,6 +3,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { inter } from "@/fonts"
 import { cn } from "@/lib/utils"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 export default function RootLayout({
   children,
@@ -17,7 +18,9 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <TanstackQueryProvider>{children}</TanstackQueryProvider>
+          <TanstackQueryProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+          </TanstackQueryProvider>
         </ThemeProvider>
       </body>
     </html>

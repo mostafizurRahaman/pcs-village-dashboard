@@ -7,8 +7,9 @@ export type User = {
   pcsTimeline: string
   lastLogin: string; 
   role: string;
-  
+  createdAt: string, 
+  image: string;   
   verified: boolean
-  status: "Active" | "Suspended"
+  status: "Active" | "Blocked" | "Pending"
   initial?: string
 }
