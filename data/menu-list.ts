@@ -70,12 +70,6 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [],
         },
         {
-          href: "/base-requests",
-          label: "Base Requests",
-          icon: LocationEdit,
-          submenus: [],
-        },
-        {
           href: "/subscriptions",
           label: "Subscriptions",
           icon: HistoryIcon,
@@ -97,6 +91,7 @@ export function getMenuList(pathname: string): Group[] {
           href: "/settings",
           label: "Settings",
           icon: Settings,
+          submenus: [],
           active:
             pathname.startsWith("/settings") ||
             pathname.startsWith("/about-us") ||
