@@ -3,9 +3,7 @@
 import { UserNav } from "@/components/navigation/user-nav"
 import { SheetMenu } from "@/components/navigation/sheet-menu"
 import { ModeToggle } from "./mode-toggle"
-import { Input } from "@/components/ui/input"
-import { Search, Bell } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { NotificationBell } from "./notification-bell"
 
 interface NavbarProps {
   title: string
@@ -34,19 +32,7 @@ export function Navbar({ title }: NavbarProps) {
         <div className="flex flex-1 items-center justify-end gap-2">
           <ModeToggle />
 
-          {/* Notification Bell with red badge */}
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative h-9 w-9 rounded-lg"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5 text-foreground" />
-              {/* red dot badge */}
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive ring-1 ring-card" />
-            </Button>
-          </div>
+          <NotificationBell />
 
           <UserNav />
         </div>
