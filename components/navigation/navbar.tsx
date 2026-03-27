@@ -21,14 +21,14 @@ export function Navbar({ title }: NavbarProps) {
         </div>
 
         {/* Search bar — Figma design shows ~448px wide on left */}
-        <div className="relative w-full max-w-[448px]">
+        {/* <div className="relative w-full max-w-[448px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             type="search"
             placeholder="Search..."
             className="pl-9 h-10 bg-card border-border text-sm placeholder:text-muted-foreground rounded-md"
           />
-        </div>
+        </div> */}
 
         {/* Right-side actions */}
         <div className="flex flex-1 items-center justify-end gap-2">

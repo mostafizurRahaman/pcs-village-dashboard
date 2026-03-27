@@ -1,4 +1,18 @@
+import type { Metadata } from "next"
 import Image from "next/image"
+
+export const metadata: Metadata = {
+  title: {
+    default: "Sign In",
+    template: "%s | PCS Village Admin",
+  },
+  description:
+    "Sign in, create an account, or reset your password for the PCS Village Admin Portal.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function AuthLayout({
   children,
