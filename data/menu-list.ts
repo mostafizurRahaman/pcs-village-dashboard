@@ -5,13 +5,13 @@ import {
   LucideIcon,
   SlidersHorizontal,
   UserRound,
- 
   Share2Icon,
- 
   GitBranch,
   LocationEdit,
- 
   LocationEditIcon,
+  SubscriptIcon,
+  HistoryIcon,
+  FlagIcon,
 } from "lucide-react"
 
 type Submenu = {
@@ -70,45 +70,38 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [],
         },
         {
-          href: "/referrals",
-          label: "Referrals",
-          icon: Share2Icon,
+          href: "/base-requests",
+          label: "Base Requests",
+          icon: LocationEdit,
           submenus: [],
         },
         {
-          // Settings parent — active when on /settings OR /profile
+          href: "/subscriptions",
+          label: "Subscriptions",
+          icon: HistoryIcon,
+          submenus: [],
+        },
+        {
+          href: "/subscription-plans",
+          label: "Subscription Plan",
+          icon: SubscriptIcon,
+          submenus: [],
+        },
+        {
+          href: "/reports",
+          label: "Reports",
+          icon: FlagIcon,
+          submenus: [],
+        },
+        {
           href: "/settings",
           label: "Settings",
           icon: Settings,
           active:
-            pathname.startsWith("/settings") || pathname.startsWith("/profile"),
-          submenus: [
-            {
-              href: "/settings",
-              label: "System Settings",
-              icon: SlidersHorizontal,
-            },
-            {
-              href: "/profile",
-              label: "Profile",
-              icon: UserRound,
-            },
-            {
-              href: "/privacy-policy",
-              label: "Privacy Policy",
-              icon: UserRound,
-            },
-            {
-              href: "/terms-and-conditions",
-              label: "Terms and Conditions",
-              icon: UserRound,
-            },
-            {
-              href: "/about-us",
-              label: "About us",
-              icon: UserRound,
-            },
-          ],
+            pathname.startsWith("/settings") ||
+            pathname.startsWith("/about-us") ||
+            pathname.startsWith("/privacy-policy") ||
+            pathname.startsWith("/faq"),
         },
       ],
     },

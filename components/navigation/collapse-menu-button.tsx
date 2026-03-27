@@ -71,7 +71,7 @@ export function CollapseMenuButton({
                     className={cn(
                         "w-full justify-start h-10 rounded-md gap-3 transition-all duration-200",
                         isSubmenuActive
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                            ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground"
                             : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     )}
                 >
@@ -115,7 +115,7 @@ export function CollapseMenuButton({
                         className={cn(
                             "w-full justify-start h-9 mb-0.5 pl-8 rounded-md gap-2 transition-all duration-200",
                             (active === undefined && pathname === href) || active
-                                ? "bg-primary/20 text-primary hover:bg-primary/30"
+                                ? "bg-sidebar-primary/20 text-sidebar-primary-foreground hover:bg-sidebar-primary/30"
                                 : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         )}
                         asChild
@@ -150,7 +150,7 @@ export function CollapseMenuButton({
                                 className={cn(
                                     "w-full justify-start h-10 mb-0.5 rounded-md gap-3 transition-all duration-200",
                                     isSubmenuActive
-                                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                        ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
                                         : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                                 )}
                             >

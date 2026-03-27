@@ -71,7 +71,7 @@ export function Menu({ isOpen }: MenuProps) {
                                                                 className={cn(
                                                                     "w-full justify-start h-10 mb-0.5 rounded-md transition-all duration-200 gap-3",
                                                                     (active === undefined && pathname.startsWith(href)) || active
-                                                                        ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                                                                        ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground"
                                                                         : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                                                                 )}
                                                                 asChild
