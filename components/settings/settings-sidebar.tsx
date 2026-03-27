@@ -33,8 +33,11 @@ export function SettingsSidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="w-full max-w-[300px] shrink-0 bg-card border border-border rounded-lg p-4 flex flex-col gap-4 self-start">
-      <Typography variant="SemiBold_H4" className="text-primary !text-[18px]">
+    <div className="flex w-full max-w-[300px] shrink-0 flex-col gap-4 self-start rounded-lg border border-border bg-card p-4">
+      <Typography
+        variant="SemiBold_H4"
+        className="!text-[18px] text-primary dark:text-foreground"
+      >
         Settings
       </Typography>
 
@@ -45,7 +48,7 @@ export function SettingsSidebar() {
             <Link key={href} href={href}>
               <div
                 className={cn(
-                  "flex items-center gap-3 h-12 px-4 rounded-lg transition-colors duration-200",
+                  "flex h-12 items-center gap-3 rounded-lg px-4 transition-colors duration-200",
                   isActive
                     ? "bg-primary text-primary-foreground"
                     : "text-foreground hover:bg-muted"
