@@ -1,7 +1,7 @@
 import { TanstackQueryProvider } from "@/components/TanstackQueryProvider"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { inter } from "@/fonts"
+import { inter, lexend } from "@/fonts"
 import { cn } from "@/lib/utils"
 import { TooltipProvider } from "@/components/ui/tooltip"
 
@@ -14,7 +14,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", inter.variable)}
+      className={cn("antialiased", lexend.variable)}
     >
       <body>
         <ThemeProvider>

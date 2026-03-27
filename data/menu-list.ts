@@ -5,6 +5,13 @@ import {
   LucideIcon,
   SlidersHorizontal,
   UserRound,
+ 
+  Share2Icon,
+ 
+  GitBranch,
+  LocationEdit,
+ 
+  LocationEditIcon,
 } from "lucide-react"
 
 type Submenu = {
@@ -42,6 +49,30 @@ export function getMenuList(pathname: string): Group[] {
           href: "/users",
           label: "User",
           icon: Users,
+          submenus: [],
+        },
+        {
+          href: "/branches",
+          label: "Branches",
+          icon: GitBranch,
+          submenus: [],
+        },
+        {
+          href: "/bases",
+          label: "Bases",
+          icon: LocationEditIcon,
+          submenus: [],
+        },
+        {
+          href: "/base-requests",
+          label: "Base Requests",
+          icon: LocationEdit,
+          submenus: [],
+        },
+        {
+          href: "/referrals",
+          label: "Referrals",
+          icon: Share2Icon,
           submenus: [],
         },
         {

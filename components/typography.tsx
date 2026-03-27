@@ -3,7 +3,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { FC, ReactNode, createElement } from "react"
 import { cn } from "@/lib/utils"
-import { inter } from "@/fonts"
+import { inter, lexend } from "@/fonts"
 
 /**
  * Typography variants with specific font sizes, weights, and styles.
@@ -117,7 +117,8 @@ export const Typography: FC<TypographyProps> = ({
   const fontSizeClass = fontSizeMap[headingSize] || "text-base"
   const lineHeightClass = lineHeightMap[headingSize] || "leading-normal"
 
-  const styleClasses = `${inter.className} ${fontSizeClass} ${lineHeightClass} ${fontWeightClass}`
+  // const styleClasses = `${inter.className} ${fontSizeClass} ${lineHeightClass} ${fontWeightClass}`
+  const styleClasses = `${lexend.className} ${fontSizeClass} ${lineHeightClass} ${fontWeightClass}`
 
   // Line clamping style
   const lineClampStyle =
