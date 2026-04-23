@@ -1,15 +1,18 @@
-import { IBase } from "@/types/bases"
+
+import { IBaseRequest } from "@/types/base-request"
 import { useMemo, useCallback } from "react"
 
 export function useExportConfig() {
   // Column label mapping (for export headers)
   const columnMapping = useMemo(
     () => ({
-      id: "Base ID",
-      baseName: "Base Name",
+      _id: "Base ID",
+      name: "Base Name",
+      email: "Requested By",
       country: "Country",
       state: "State",
       city: "City",
+      type: "Base Type",
       createdAt: "Created At",
     }),
     []
@@ -23,13 +26,15 @@ export function useExportConfig() {
   )
 
   // Transform function (memoized for performance)
-  const transformFunction = useCallback((data: IBase) => {
+  const transformFunction = useCallback((data: IBaseRequest) => {
     return {
-      id: data.id,
-      baseName: data.baseName,
+      _id: data._id,
+      name: data.name,
+      email: data.email,
       country: data.country,
       state: data.state,
       city: data.city,
+      type: data.type,
       createdAt: data.createdAt,
     }
   }, [])
@@ -37,16 +42,18 @@ export function useExportConfig() {
   return {
     columnMapping,
     headers,
-    entityName: "bases",
+    entityName: "base-request",
     transformFunction,
 
     // Fixed: match column count (6 columns)
     columnWidths: [
       { wch: 10 }, // id
-      { wch: 20 }, // baseName
+      { wch: 20 }, // name
+      { wch: 20 }, // email
       { wch: 20 }, // country
       { wch: 20 }, // state
       { wch: 20 }, // city
+      { wch: 20 }, // type
       { wch: 20 }, // createdAt
     ],
   }

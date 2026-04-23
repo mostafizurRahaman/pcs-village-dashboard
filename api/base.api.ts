@@ -65,7 +65,7 @@ export const baseApi = {
   /**
    * Update user status (Active/Blocked) or Verification
    */
-  update: async (id: string, payload: { name: string }) => {
+  update: async (id: string, payload: Partial<IBase>) => {
     const response = await axiosInstance.patch(`/dutystations/${id}`, payload)
     return response.data
   },

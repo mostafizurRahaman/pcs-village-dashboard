@@ -1,8 +1,7 @@
 "use client"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { preprocessSearch } from "@/components/data-table/utils"
-import { baseRequests } from "@/data/base-request";
-
+import { baseRequestApi } from "@/api"
 
 export function useBaseRequestData(
   page: number,
@@ -23,25 +22,24 @@ export function useBaseRequestData(
       sortOrder,
     ],
     queryFn: async () => {
-      let filteredData = [...baseRequests]
-
-      if (search) {
-        const lowerSearch = preprocessSearch(search).toLowerCase()
-        filteredData = filteredData.filter(
-          (r) =>
-            r.baseName.toLowerCase().includes(lowerSearch) ||
-            r.requesterName.toLowerCase().includes(lowerSearch)
-        )
-      }
+      const response = await baseRequestApi.getAll({
+        page,
+        limit: pageSize,
+        searchTerm: search || undefined,
+        fromDate: dateRange.from_date || undefined,
+        toDate: dateRange.to_date || undefined,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+      })
 
       return {
-        success: true,
-        data: filteredData,
+        success: response.success,
+        data: response.data,
         pagination: {
-          page: 1,
-          limit: 10,
-          totalPage: 1,
-          totalPages: filteredData.length,
+          page: response.meta.page,
+          limit: response.meta.limit,
+          totalPage: response.meta.totalPages,
+          totalItems: response.meta.total,
         },
       }
     },
