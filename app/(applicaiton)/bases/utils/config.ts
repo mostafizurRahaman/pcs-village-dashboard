@@ -5,11 +5,13 @@ export function useExportConfig() {
   // Column label mapping (for export headers)
   const columnMapping = useMemo(
     () => ({
-      id: "Base ID",
-      baseName: "Base Name",
+      _id: "Base ID",
+      name: "Base Name",
       country: "Country",
       state: "State",
       city: "City",
+      type: "Base Type",
+      isDeleteable: "Droppable",
       createdAt: "Created At",
     }),
     []
@@ -25,11 +27,13 @@ export function useExportConfig() {
   // Transform function (memoized for performance)
   const transformFunction = useCallback((data: IBase) => {
     return {
-      id: data.id,
-      baseName: data.baseName,
+      _id: data._id,
+      name: data.name,
       country: data.country,
       state: data.state,
       city: data.city,
+      type: data.type,
+      isDeleteable: data.isDeleteable,
       createdAt: data.createdAt,
     }
   }, [])
@@ -47,6 +51,8 @@ export function useExportConfig() {
       { wch: 20 }, // country
       { wch: 20 }, // state
       { wch: 20 }, // city
+      { wch: 20 }, // type
+      { wch: 20 }, // droppable
       { wch: 20 }, // createdAt
     ],
   }

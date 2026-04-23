@@ -24,12 +24,24 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Typography } from "@/components/typography"
+import { baseApi } from "@/api"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { useQueryClient } from "@tanstack/react-query"
 
 const formSchema = z.object({
-  baseName: z.string().min(2, "Base name must be at least 2 characters."),
+  name: z.string().min(2, "Base name must be at least 2 characters."),
   country: z.string().min(1, "Country is required."),
   state: z.string().min(1, "State is required."),
   city: z.string().min(1, "City is required."),
+  type: z.enum(["OFFICE", "FIELD", "REMOTE", "BASE"], {
+    error: `The values should "OFFICE" | "FIELD" | "REMOTE" | "BASE"`,
+  }),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -46,15 +58,10 @@ export function AddBaseModal({
   onSuccess,
 }: AddBaseModalProps) {
   const [isLoading, setIsLoading] = React.useState(false)
+  const queryClient = useQueryClient()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      baseName: "",
-      country: "",
-      state: "",
-      city: "",
-    },
   })
 
   // Reset form when modal closes or opens
@@ -66,22 +73,38 @@ export function AddBaseModal({
 
   async function onSubmit(data: FormValues) {
     setIsLoading(true)
+
     try {
-      // API call simulation
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const res = await baseApi.add({
+        name: data.name,
+        country: data.country,
+        city: data.city,
+        state: data.state,
+        type: data.type,
+      })
 
-      console.log("Creating Base:", data)
-
-      toast.success(`Branch "${data.baseName}" created successfully`)
-      onOpenChange(false)
-      form.reset()
-      onSuccess?.()
-    } catch (error) {
-      toast.error("Failed to create branch. Please try again.")
+      if (res.success) {
+        toast.success(`Base "${data.name}" added successfully`)
+        onSuccess?.()
+        onOpenChange(false)
+        form.reset()
+        queryClient.invalidateQueries({ queryKey: ["bases"] })
+      } else {
+        toast.success(res.message)
+      }
+    } catch {
+      toast.error("Failed to add bases")
     } finally {
       setIsLoading(false)
     }
   }
+
+  const DUTY_STATION_OPTIONS = [
+    { label: "Office", value: "OFFICE" },
+    { label: "Field", value: "FIELD" },
+    { label: "Remote", value: "REMOTE" },
+    { label: "Base", value: "BASE" },
+  ]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -111,7 +134,7 @@ export function AddBaseModal({
             <FieldGroup>
               {/* Base Name Field */}
               <Controller
-                name="baseName"
+                name="name"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
@@ -193,6 +216,37 @@ export function AddBaseModal({
                       placeholder="Fayetteville"
                       aria-invalid={fieldState.invalid}
                     />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="type"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="duty-station">
+                      <Typography variant="Medium_H7">Duty Station</Typography>
+                    </FieldLabel>
+
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger id="duty-station" className="w-full">
+                        <SelectValue placeholder="Select a station" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DUTY_STATION_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}

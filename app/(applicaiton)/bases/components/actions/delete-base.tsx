@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/typography"
 import { IBase } from "@/types/bases"
+import { useQueryClient } from "@tanstack/react-query"
+import { baseApi } from "@/api"
 
 interface DeleteBasePopupProps {
   open: boolean
@@ -29,15 +31,25 @@ export function DeleteUserPopup({
   onSuccess,
 }: DeleteBasePopupProps) {
   const [isDeleting, setIsDeleting] = useState(false)
+  const queryClient = useQueryClient()
 
   const handleDelete = async () => {
     setIsDeleting(true)
-    setTimeout(() => {
-      toast.success(`Branch "${base?.baseName}" has been removed`)
+    try {
+      const res = await baseApi.delete(base?._id as string)
+      if (res.success) {
+        toast.success(res.message)
+        onSuccess?.()
+        onOpenChange(false)
+        queryClient.invalidateQueries({ queryKey: ["bases"] })
+      } else {
+        toast.error(res.message)
+      }
+    } catch {
+      toast.error("Failed to delete bases")
+    } finally {
       setIsDeleting(false)
-      onOpenChange(false)
-      onSuccess?.()
-    }, 1000)
+    }
   }
 
   if (!base) return null

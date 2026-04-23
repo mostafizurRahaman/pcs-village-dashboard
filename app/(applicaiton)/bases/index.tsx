@@ -12,19 +12,20 @@ import { branches as bases } from "@/data/branches"
 const fetchByIdsFn = async (ids: string[] | number[]): Promise<IBase[]> => {
   const stringIds = ids.map((id) => String(id))
   const newBases = bases.filter((base) =>
-    stringIds.includes(base.id.toString())
+    stringIds.includes(base._id!.toString())
   )
 
   return (
     newBases?.map(
-      (branch) =>
+      (base) =>
         ({
-          id: branch.id,
-          baseName: branch.baseName,
-          country: branch.country,
-          state: branch.state,
-          city: branch.city,
-          createdAt: branch.createdAt,
+          _id: base._id,
+          name: base.name,
+          country: base.country,
+          state: base.state,
+          city: base.city,
+          type: base.type,
+          createdAt: base.createdAt,
         }) as IBase
     ) || []
   )
@@ -39,7 +40,7 @@ export default function BasesTable() {
       exportConfig={exportConfig}
       fetchDataFn={useBaseData}
       fetchByIdsFn={fetchByIdsFn}
-      idField="id"
+      idField="_id"
       pageSizeOptions={[2, 5, 10, 20, 50, 100]}
       renderToolbarContent={({
         selectedRows,

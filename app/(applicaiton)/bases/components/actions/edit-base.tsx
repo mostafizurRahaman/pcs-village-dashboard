@@ -25,12 +25,25 @@ import {
 import { Input } from "@/components/ui/input"
 import { Typography } from "@/components/typography"
 import { IBase } from "@/types/bases"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { DUTY_STATION_OPTIONS } from "@/constants"
+import { baseApi } from "@/api"
+import { useQueryClient } from "@tanstack/react-query"
 
 const formSchema = z.object({
-  baseName: z.string().min(2, "Base name must be at least 2 characters."),
+  name: z.string().min(2, "Base name must be at least 2 characters."),
   country: z.string().min(1, "Country is required."),
   state: z.string().min(1, "State is required."),
   city: z.string().min(1, "City is required."),
+  type: z.enum(["OFFICE", "FIELD", "REMOTE", "BASE"], {
+    error: `The values should "OFFICE" | "FIELD" | "REMOTE" | "BASE"`,
+  }),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -50,13 +63,16 @@ export function EditBaseModal({
 }: EditBaseModalProps) {
   const [isLoading, setIsLoading] = React.useState(false)
 
+  const queryClient = useQueryClient()
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      baseName: "",
-      country: "",
-      state: "",
-      city: "",
+      name: base?.name,
+      country: base?.country,
+      state: base?.state,
+      city: base?.city,
+      type: base?.type,
     },
   })
 
@@ -64,10 +80,11 @@ export function EditBaseModal({
   React.useEffect(() => {
     if (base && open) {
       form.reset({
-        baseName: base.baseName,
+        name: base.name,
         country: base.country,
         state: base.state,
         city: base.city,
+        type: base.type,
       })
     }
   }, [base, open, form])
@@ -77,16 +94,18 @@ export function EditBaseModal({
 
     setIsLoading(true)
     try {
-      // Simulated API Call
-      // await new Promise((resolve) => setTimeout(resolve, 1000))
+      const res = await baseApi.update(base?._id as string, data)
 
-      console.log("Updating Base ID:", base.id, data)
-
-      toast.success(`Branch "${data?.baseName}" updated successfully`)
-      onSuccess?.()
-      onOpenChange(false)
+      if (res.success) {
+        toast.success(res.message)
+        onSuccess?.()
+        onOpenChange(false)
+        queryClient.invalidateQueries({ queryKey: ["bases"] })
+      } else {
+        toast.success(res.message)
+      }
     } catch (error) {
-      toast.error("Failed to update branch details.")
+      toast.error("Failed to update base details.")
     } finally {
       setIsLoading(false)
     }
@@ -128,7 +147,7 @@ export function EditBaseModal({
             <FieldGroup>
               {/* Base Name */}
               <Controller
-                name="baseName"
+                name="name"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
@@ -210,6 +229,35 @@ export function EditBaseModal({
                       placeholder="Fayetteville"
                       aria-invalid={fieldState.invalid}
                     />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="type"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="duty-station">
+                      <Typography variant="Medium_H7">Duty Station</Typography>
+                    </FieldLabel>
+
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger id="duty-station" className="w-full">
+                        <SelectValue placeholder="Select a station" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DUTY_STATION_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
