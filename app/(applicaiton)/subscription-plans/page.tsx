@@ -21,7 +21,7 @@ export default function SubscriptionManagementPage() {
           />
         </div>
 
-        <SubscriptionStats />
+        {/* <SubscriptionStats /> */}
 
         <Suspense
           fallback={

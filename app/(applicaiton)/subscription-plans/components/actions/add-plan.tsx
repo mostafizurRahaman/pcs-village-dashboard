@@ -2,10 +2,10 @@
 
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, useFieldArray } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
-import { Loader2, CreditCard, DollarSign } from "lucide-react"
+import { Loader2, CreditCard, DollarSign, Plus, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,7 +14,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription,
 } from "@/components/ui/dialog"
 import {
   Field,
@@ -31,14 +30,23 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Typography } from "@/components/typography"
+import { subscriptionPlanApi } from "@/api"
+import { useQueryClient } from "@tanstack/react-query"
 
-// 1. Define the schema with z.number() instead of z.coerce
+// 1. Define the Schema
 const planSchema = z.object({
-  planName: z.string().min(3, "Plan name must be at least 3 characters."),
-  price: z.number().min(1, "Price must be at least $1."),
-  interval: z.enum(["month", "year"]),
+  name: z.string().min(3, "Plan name must be at least 3 characters."),
+  description: z.string().min(5, "Description is required."),
+  price: z.preprocess(
+    (val) => (val === "" ? undefined : Number(val)),
+    z.number({ invalid_type_error: "Price must be a number" }).min(1, "Price must be at least $1.")
+  ),
+  currency: z.string().default("USD"),
+  interval: z.enum(["MONTH", "YEAR"]),
+  features: z.array(z.string().min(1, "Feature cannot be empty")).min(1, "Add at least one feature"),
 })
 
+// 2. Define the types for the form state vs the validated output
 type PlanFormValues = z.infer<typeof planSchema>
 
 interface AddPlanModalProps {
@@ -47,39 +55,59 @@ interface AddPlanModalProps {
   onSuccess?: () => void
 }
 
-export function AddPlanModal({
-  open,
-  onOpenChange,
-  onSuccess,
-}: AddPlanModalProps) {
+export function AddPlanModal({ open, onOpenChange, onSuccess }: AddPlanModalProps) {
   const [isLoading, setIsLoading] = React.useState(false)
+  const queryClient = useQueryClient()
 
+  // Fix 1 & 2: Use explicit generic and handle the 'price' type mismatch for the default value
   const form = useForm<PlanFormValues>({
     resolver: zodResolver(planSchema),
     defaultValues: {
-      planName: "",
-      price: 0,
-      interval: "month",
+      name: "",
+      description: "",
+      price: "" as unknown as number, // Cast to unknown then number to bypass the empty string initial state
+      currency: "USD",
+      interval: "MONTH",
+      features: [""],
     },
   })
 
+  // Fix 3: Explicitly type the field array name to fix "Type 'features' is not assignable to type 'never'"
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "features" as const, 
+  })
+
   React.useEffect(() => {
-    if (!open) {
-      form.reset()
-    }
+    if (!open) form.reset()
   }, [open, form])
 
+  // Fix 4: The data coming here is now guaranteed to match PlanFormValues by handleSubmit
   async function onSubmit(data: PlanFormValues) {
     setIsLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      console.log("Stripe Plan Data:", data)
-      toast.success(`Plan "${data.planName}" created successfully`)
-      onOpenChange(false)
-      onSuccess?.()
+      const res = await subscriptionPlanApi.addPlan({
+        name: data.name,
+        description: data.description,
+        currency: data.currency,
+        // Ensure price is sent as a string if your API expects string
+        price: String(data.price), 
+        features: data.features,
+        interval: data.interval,
+      })
+
+      if (res.success) {
+        toast.success(res.message)
+        onSuccess?.()
+        onOpenChange(false)
+        queryClient.invalidateQueries({ queryKey: ["subscription-plans"] })
+      } else {
+        toast.error(res.message)
+      }
     } catch (error) {
-      console.error(error)
-      toast.error("Failed to create subscription plan.")
+      // Fix 5: Handle the unused 'error' variable by logging it or removing it
+      console.error("Submission error:", error)
+      toast.error("Failed to create subscription plan")
     } finally {
       setIsLoading(false)
     }
@@ -87,9 +115,9 @@ export function AddPlanModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md overflow-hidden rounded-xl border-border bg-card p-0">
+      <DialogContent className="max-w-lg overflow-hidden rounded-xl border-border bg-card p-0">
         <div className="h-1.5 w-full bg-primary" />
-        <div className="p-6">
+        <div className="max-h-[90vh] overflow-y-auto p-6">
           <DialogHeader className="mb-6 flex flex-col items-center justify-center gap-2 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
               <CreditCard className="h-6 w-6" />
@@ -97,34 +125,30 @@ export function AddPlanModal({
             <DialogTitle asChild>
               <Typography variant="Bold_H3">New Subscription Plan</Typography>
             </DialogTitle>
-            <DialogDescription asChild>
-              <Typography
-                variant="Regular_H7"
-                className="text-muted-foreground"
-              >
-                This will create a new Product and Price in your Stripe account.
-              </Typography>
-            </DialogDescription>
           </DialogHeader>
 
-          <form id="add-plan-form" onSubmit={form.handleSubmit(onSubmit)}>
+          <form id="add-plan-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FieldGroup>
               <Controller
-                name="planName"
+                name="name"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="planName">
-                      <Typography variant="Medium_H7">Plan Name</Typography>
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="planName"
-                      placeholder="e.g. Pro Monthly"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    <FieldLabel>Plan Name</FieldLabel>
+                    <Input {...field} placeholder="e.g. Pro Plan" />
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="description"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel>Description</FieldLabel>
+                    <Input {...field} placeholder="Short summary of the plan" />
+                    <FieldError errors={[fieldState.error]} />
                   </Field>
                 )}
               />
@@ -135,25 +159,28 @@ export function AddPlanModal({
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="price">
-                        <Typography variant="Medium_H7">Price (USD)</Typography>
-                      </FieldLabel>
+                      <FieldLabel>Price (USD)</FieldLabel>
                       <div className="relative">
                         <DollarSign className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                           {...field}
-                          id="price"
-                          type="number"
-                          className="pl-8"
-                          // Convert string value from input to number for the form state
-                          onChange={(e) =>
-                            field.onChange(e.target.valueAsNumber || 0)
-                          }
+                          value={field.value ?? ""}
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="0.00"
+                          className="pl-8 pr-12"
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === "" || /^[0-9]*\.?[0-9]*$/.test(val)) {
+                              field.onChange(val);
+                            }
+                          }}
                         />
+                        <span className="absolute top-2.5 right-3 text-xs font-bold text-muted-foreground">
+                          USD
+                        </span>
                       </div>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      <FieldError errors={[fieldState.error]} />
                     </Field>
                   )}
                 />
@@ -163,31 +190,66 @@ export function AddPlanModal({
                   control={form.control}
                   render={({ field }) => (
                     <Field>
-                      <FieldLabel>
-                        <Typography variant="Medium_H7">
-                          Billing Cycle
-                        </Typography>
-                      </FieldLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
+                      <FieldLabel>Interval</FieldLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select interval" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="month">Monthly</SelectItem>
-                          <SelectItem value="year">Yearly</SelectItem>
+                          <SelectItem value="MONTH">MONTH</SelectItem>
+                          <SelectItem value="YEAR">YEAR</SelectItem>
                         </SelectContent>
                       </Select>
                     </Field>
                   )}
                 />
               </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <FieldLabel>Plan Features</FieldLabel>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-primary"
+                    onClick={() => append("")}
+                  >
+                    <Plus className="mr-1 h-4 w-4" /> Add Feature
+                  </Button>
+                </div>
+                
+                {fields.map((item, index) => (
+                  <div key={item.id} className="flex gap-2">
+                    <div className="flex-1">
+                      <Controller
+                        name={`features.${index}`}
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                          <Field data-invalid={fieldState.invalid}>
+                            <Input {...field} placeholder={`Feature #${index + 1}`} />
+                          </Field>
+                        )}
+                      />
+                    </div>
+                    {fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="shrink-0 border-destructive/20 text-destructive hover:bg-destructive/10"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
             </FieldGroup>
           </form>
 
-          <DialogFooter className="mt-8 flex gap-3 sm:gap-3">
+          <DialogFooter className="mt-8 flex gap-3">
             <Button
               type="button"
               variant="outline"
@@ -203,11 +265,7 @@ export function AddPlanModal({
               disabled={isLoading}
               className="flex-1"
             >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                "Create Plan"
-              )}
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Plan"}
             </Button>
           </DialogFooter>
         </div>

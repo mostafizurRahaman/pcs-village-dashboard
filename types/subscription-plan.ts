@@ -1,9 +1,26 @@
 export interface ISubscriptionPlan {
-  [key: string]: string | number | undefined | null
-  id: string
-  planName: string
+  [key: string]: string | number | undefined |boolean| null | string[]
+  _id: string
+  name: string
+  features: string[]
+  description?: string
   price: number
-  interval: "Monthly" | "Yearly"
-  subscribers: number
-  status: "Active" | "Disabled"
+  currency: string; 
+  interval: "MONTH" | "YEAR";
+  isActive: boolean
+  createdAt: string; 
+  updatedAt: string
 }
+
+
+
+
+export interface  IAddSubscriptionPlanPayload  {
+  name: string; 
+  description?:string; 
+  price: string; 
+  currency: string; 
+  interval: "MONTH" | "YEAR";
+  features: string[]
+}
+ 

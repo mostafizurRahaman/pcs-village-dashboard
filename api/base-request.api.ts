@@ -1,6 +1,4 @@
 import axiosInstance from "@/lib/axios"
-import { IBaseRequest } from "@/types/base-request"
-import { IBase } from "@/types/bases"
 
 export const baseRequestApi = {
   /**
