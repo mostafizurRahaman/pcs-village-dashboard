@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/typography"
 import { IBranch } from "@/types/branches"
+import { branchApi } from "@/api/branch.api"
+import { useQueryClient } from "@tanstack/react-query"
 
 export function DeleteBranchPopup({
   open,
@@ -26,15 +28,25 @@ export function DeleteBranchPopup({
   onSuccess?: () => void
 }) {
   const [isDeleting, setIsDeleting] = useState(false)
+  const queryClient = useQueryClient()
 
   const handleDelete = async () => {
     setIsDeleting(true)
-    setTimeout(() => {
-      toast.success(`Branch "${branch?.branchName}" deleted`)
+    try {
+      const res = await branchApi.delete(branch?._id as string)
+      if (res.success) {
+        toast.success(res.message)
+        onSuccess?.()
+        onOpenChange(false)
+        queryClient.invalidateQueries({ queryKey: ["branches"] })
+      } else {
+        toast.error(res.message)
+      }
+    } catch {
+      toast.error("Failed to update branch")
+    } finally {
       setIsDeleting(false)
-      onOpenChange(false)
-      onSuccess?.()
-    }, 1000)
+    }
   }
 
   if (!branch) return null
@@ -56,10 +68,7 @@ export function DeleteBranchPopup({
           </DialogTitle>
           <Typography variant="Regular_H7" className="text-muted-foreground">
             Are you sure you want to delete{" "}
-            <span className="font-bold text-foreground">
-              {branch.branchName}
-            </span>
-            ?
+            <span className="font-bold text-foreground">{branch.name}</span>?
           </Typography>
         </DialogHeader>
         <DialogFooter className="mt-6 flex gap-3">

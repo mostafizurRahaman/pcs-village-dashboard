@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Typography } from "@/components/typography"
+import { branchApi } from "@/api/branch.api"
+import { useQueryClient } from "@tanstack/react-query"
 
 const formSchema = z.object({
   branchName: z.string().min(2, "Branch name is required."),
@@ -38,6 +40,7 @@ export function AddBranchModal({
   onSuccess?: () => void
 }) {
   const [isLoading, setIsLoading] = React.useState(false)
+  const queryClient = useQueryClient()
   const form = useForm<{ branchName: string }>({
     resolver: zodResolver(formSchema),
     defaultValues: { branchName: "" },
@@ -46,11 +49,19 @@ export function AddBranchModal({
   async function onSubmit(data: { branchName: string }) {
     setIsLoading(true)
     try {
-      await new Promise((r) => setTimeout(r, 1000))
-      toast.success(`Branch "${data.branchName}" added successfully`)
-      onSuccess?.()
-      onOpenChange(false)
-      form.reset()
+      const res = await branchApi.add({
+        name: data.branchName,
+      })
+
+      if (res.success) {
+        toast.success(`Branch "${data.branchName}" added successfully`)
+        onSuccess?.()
+        onOpenChange(false)
+        form.reset()
+        queryClient.invalidateQueries({ queryKey: ["branches"] })
+      } else {
+        toast.success(res.message)
+      }
     } catch {
       toast.error("Failed to add branch")
     } finally {

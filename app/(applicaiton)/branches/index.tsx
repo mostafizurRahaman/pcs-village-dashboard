@@ -15,7 +15,7 @@ export default function BranchesTable() {
       getColumns={getColumns}
       exportConfig={exportConfig}
       fetchDataFn={useBranchData}
-      idField="id"
+      idField="_id"
       pageSizeOptions={[10, 20, 50]}
       renderToolbarContent={({
         selectedRows,

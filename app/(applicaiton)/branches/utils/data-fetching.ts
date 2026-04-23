@@ -2,47 +2,9 @@
 
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { preprocessSearch } from "@/components/data-table/utils"
-import { IBranch } from "@/types/branches";
-
-// Mock Data matching your screenshot
-const branches: IBranch[] = [
-  {
-    id: "BR001",
-    branchName: "Army",
-    createdAt: "2025-01-10",
-    status: "Active",
-  },
-  {
-    id: "BR002",
-    branchName: "Navy",
-    createdAt: "2025-01-10",
-    status: "Active",
-  },
-  {
-    id: "BR003",
-    branchName: "Air Force",
-    createdAt: "2025-01-10",
-    status: "Active",
-  },
-  {
-    id: "BR004",
-    branchName: "Marine Corps",
-    createdAt: "2025-01-10",
-    status: "Active",
-  },
-  {
-    id: "BR005",
-    branchName: "Coast Guard",
-    createdAt: "2025-01-10",
-    status: "Active",
-  },
-  {
-    id: "BR006",
-    branchName: "Space Force",
-    createdAt: "2025-01-15",
-    status: "Active",
-  },
-]
+import { IBranch } from "@/types/branches"
+import { branchApi } from "@/api/branch.api"
+import { toDate } from "date-fns"
 
 export function useBranchData(
   page: number,
@@ -63,25 +25,24 @@ export function useBranchData(
       sortOrder,
     ],
     queryFn: async () => {
-      let filteredData = [...branches]
-
-      if (search) {
-        const lowerSearch = preprocessSearch(search).toLowerCase()
-        filteredData = filteredData.filter(
-          (b) =>
-            b.branchName.toLowerCase().includes(lowerSearch) ||
-            b.id.toLowerCase().includes(lowerSearch)
-        )
-      }
+      const response = await branchApi.getAll({
+        page,
+        limit: pageSize,
+        searchTerm: search || undefined,
+        fromDate: dateRange.from_date || undefined,
+        toDate: dateRange.to_date || undefined,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+      })
 
       return {
-        success: true,
-        data: filteredData,
+        success: response.success,
+        data: response.data,
         pagination: {
-          page: 1,
-          limit: 10,
-          totalPage: 1,
-          totalPages: filteredData.length,
+          page: response.meta.page,
+          limit: response.meta.limit,
+          totalPage: response.meta.totalPages,
+          totalItems: response.meta.total,
         },
       }
     },

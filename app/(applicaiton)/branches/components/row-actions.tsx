@@ -44,7 +44,7 @@ export function DataTableRowActions<TData>({
         </Button>
 
         {/* Status Toggle Action */}
-        <Button
+        {/* <Button
           variant="ghost"
           size="icon"
           onClick={() => setStatusDialogOpen(true)}
@@ -56,7 +56,7 @@ export function DataTableRowActions<TData>({
           )}
         >
           <Power className="size-4.5" />
-        </Button>
+        </Button> */}
 
         {/* Delete Action */}
         <Button
@@ -70,12 +70,12 @@ export function DataTableRowActions<TData>({
       </div>
 
       {/* Modals */}
-      <ToggleBranchStatusModal
+      {/* <ToggleBranchStatusModal
         open={statusDialogOpen}
         onOpenChange={setStatusDialogOpen}
         branch={branch}
         onSuccess={resetSelection}
-      />
+      /> */}
 
       <EditBranchModal
         branch={branch}

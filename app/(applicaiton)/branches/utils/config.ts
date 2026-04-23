@@ -4,10 +4,11 @@ import { useMemo, useCallback } from "react"
 export function useExportConfig() {
   const columnMapping = useMemo(
     () => ({
-      id: "Branch ID",
-      branchName: "Branch Name",
+      _id: "Branch ID",
+      name: "Branch Name",
+      slug: "Slug Name",
       createdAt: "Created Date",
-      status: "Status",
+      updatedAt: "updated Date",
     }),
     []
   )
@@ -19,10 +20,12 @@ export function useExportConfig() {
 
   const transformFunction = useCallback((data: IBranch) => {
     return {
-      id: data.id,
-      branchName: data.branchName,
+      id: data._id,
+      name: data.name,
+      slug: data.slug,
+
       createdAt: data.createdAt,
-      status: data.status,
+      updatedAt: data.createdAt,
     }
   }, [])
 
@@ -33,9 +36,11 @@ export function useExportConfig() {
     transformFunction,
     columnWidths: [
       { wch: 15 }, // id
-      { wch: 25 }, // branchName
+      { wch: 25 }, // name
+      { wch: 25 }, // slug
+
       { wch: 20 }, // createdAt
-      { wch: 15 }, // status
+      { wch: 20 }, // createdAt
     ],
   }
 }

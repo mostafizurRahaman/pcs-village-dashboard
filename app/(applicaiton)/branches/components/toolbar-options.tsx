@@ -13,7 +13,7 @@ export const ToolbarOptions = ({
   selectedBases,
   totalSelectedCount,
   resetSelection,
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: any) => {
   const [addModalOpen, setAddModalOpen] = React.useState(false)
   const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false)
@@ -29,7 +29,7 @@ export const ToolbarOptions = ({
         <Typography variant="Medium_H7">Add Branch</Typography>
       </Button>
 
-      {totalSelectedCount > 0 && (
+      {/* {totalSelectedCount > 0 && (
         <Button
           variant="outline"
           size="sm"
@@ -41,7 +41,7 @@ export const ToolbarOptions = ({
             Delete ({totalSelectedCount})
           </Typography>
         </Button>
-      )}
+      )} */}
 
       <AddBranchModal
         open={addModalOpen}
@@ -49,13 +49,13 @@ export const ToolbarOptions = ({
         onSuccess={resetSelection}
       />
 
-      <BulkDeleteBranchPopup
+      {/* <BulkDeleteBranchPopup
         open={bulkDeleteOpen}
         onOpenChange={setBulkDeleteOpen}
         allSelectedIds={selectedBases.map((b: IBranch) => b.id)}
         totalSelectedCount={totalSelectedCount}
         resetSelection={resetSelection}
-      />
+      /> */}
     </div>
   )
 }

@@ -7,35 +7,49 @@ import { Typography } from "@/components/typography"
 import { DataTableRowActions } from "./row-actions"
 import { IBranch } from "@/types/branches"
 import { cn } from "@/lib/utils"
+import { formatDate } from "@/components/data-table/utils"
 
 export const getColumns = (
   handleRowDeselection: ((rowId: string) => void) | null | undefined
 ): ColumnDef<IBranch>[] => {
   const branchColumns: ColumnDef<IBranch>[] = [
     {
-      accessorKey: "id",
+      accessorKey: "_id",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="BRANCH ID" />
       ),
       cell: ({ row }) => (
         <Typography variant="Regular_H6" className="text-foreground uppercase">
-          {row.getValue("id")}
+          {row.getValue("_id")}
         </Typography>
       ),
       size: 150,
     },
     {
-      accessorKey: "branchName",
+      accessorKey: "name",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="BRANCH NAME" />
       ),
       cell: ({ row }) => (
         <Typography variant="Medium_H6" className="text-foreground">
-          {row.getValue("branchName")}
+          {row.getValue("name")}
         </Typography>
       ),
       size: 250,
     },
+    {
+      accessorKey: "slug",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="SLUG" />
+      ),
+      cell: ({ row }) => (
+        <Typography variant="Medium_H6" className="text-foreground">
+          {row.getValue("slug")}
+        </Typography>
+      ),
+      size: 250,
+    },
+
     {
       accessorKey: "createdAt",
       header: ({ column }) => (
@@ -43,33 +57,24 @@ export const getColumns = (
       ),
       cell: ({ row }) => (
         <Typography variant="Regular_H6" className="text-muted-foreground">
-          {row.getValue("createdAt")}
+          {formatDate(new Date(row.getValue("createdAt")), )}
         </Typography>
       ),
       size: 200,
     },
     {
-      accessorKey: "status",
+      accessorKey: "updatedAt",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="STATUS" />
+        <DataTableColumnHeader column={column} title="UPDATED DATE" />
       ),
-      cell: ({ row }) => {
-        const status = row.getValue("status") as string
-        return (
-          <div
-            className={cn(
-              "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-              status === "Active"
-                ? "bg-emerald-500/10 text-emerald-500"
-                : "bg-red-500/10 text-red-500"
-            )}
-          >
-            {status}
-          </div>
-        )
-      },
-      size: 150,
+      cell: ({ row }) => (
+        <Typography variant="Regular_H6" className="text-muted-foreground">
+          {formatDate(new Date(row.getValue("updatedAt")))}
+        </Typography>
+      ),
+      size: 200,
     },
+
     {
       id: "actions",
       header: ({ column }) => (

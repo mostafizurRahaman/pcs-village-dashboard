@@ -25,6 +25,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Typography } from "@/components/typography"
 import { IBranch } from "@/types/branches"
+import { branchApi } from "@/api/branch.api"
+import { useQueryClient } from "@tanstack/react-query"
 
 const formSchema = z.object({
   branchName: z.string().min(2, "Branch name is required."),
@@ -42,25 +44,26 @@ export function EditBranchModal({
   onSuccess?: () => void
 }) {
   const [isLoading, setIsLoading] = React.useState(false)
-
+  const queryClient = useQueryClient()
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: { branchName: "" },
+    defaultValues: { branchName: branch?.name as string },
   })
 
   React.useEffect(() => {
     if (branch && open) {
-      form.reset({ branchName: branch.branchName })
+      form.reset({ branchName: branch.name })
     }
   }, [branch, open, form])
 
   async function onSubmit(data: { branchName: string }) {
     setIsLoading(true)
     try {
-      await new Promise((r) => setTimeout(r, 1000))
+      await branchApi.update(branch?._id as string, { name: data.branchName })
       toast.success(`Branch updated to "${data.branchName}"`)
       onSuccess?.()
       onOpenChange(false)
+      queryClient.invalidateQueries({ queryKey: ["branches"] })
     } catch {
       toast.error("Failed to update branch")
     } finally {

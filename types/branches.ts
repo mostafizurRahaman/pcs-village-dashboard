@@ -1,7 +1,8 @@
 export interface IBranch {
   [key: string]: string | null | undefined
-  id: string
-  branchName: string
+  _id: string
+  name: string
+  slug: string
   createdAt: string
-  status: "Active" | "Inactive"
+  updatedAt: string
 }
