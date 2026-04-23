@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/typography"
 import { toast } from "sonner"
 import { IBaseRequest } from "@/types/base-request"
+import { baseRequestApi } from "@/api"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface ModalProps {
   open: boolean
@@ -27,15 +29,30 @@ export function RejectRequestModal({
   onSuccess,
 }: ModalProps) {
   const [isLoading, setIsLoading] = React.useState(false)
+  const queryClient = useQueryClient()
 
   const handleReject = async () => {
     setIsLoading(true)
-    setTimeout(() => {
-      toast.error(`Request for ${request?.baseName} rejected`)
-      onSuccess()
-      onOpenChange(false)
-      setIsLoading(false)
-    }, 1000)
+       
+           try {
+             const res = await baseRequestApi.resolve(request?._id as string, {
+               status: "REJECTED", 
+             })
+       
+             if (res.success) {
+               toast.success(res.message)
+               onSuccess?.()
+               onOpenChange(false)
+    
+               queryClient.invalidateQueries({ queryKey: ["base-requests"] })
+             } else {
+               toast.success(res.message)
+             }
+           } catch {
+             toast.error("Failed to approved base request")
+           } finally {
+             setIsLoading(false)
+           }
   }
 
   return (

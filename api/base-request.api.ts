@@ -37,7 +37,7 @@ export const baseRequestApi = {
    */
   resolve: async (
     id: string,
-    payload: { status: "APRROVED" | "REJECTED"; adminNote?: string }
+    payload: { status: "APPROVED" | "REJECTED"; adminNote?: string }
   ) => {
     const response = await axiosInstance.patch(
       `/base-request/${id}/resolve`,

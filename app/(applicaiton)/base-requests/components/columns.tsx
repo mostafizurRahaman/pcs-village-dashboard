@@ -7,6 +7,7 @@ import { IBaseRequest } from "@/types/base-request"
 import { cn } from "@/lib/utils"
 import { DutyStationBadge } from "@/components/batches/base-type"
 import { formatDate } from "@/components/data-table/utils"
+import { RequestStatusBadge } from "@/components/batches/base-request-status"
 
 export const getColumns = (): ColumnDef<IBaseRequest>[] => [
   {
@@ -82,18 +83,7 @@ export const getColumns = (): ColumnDef<IBaseRequest>[] => [
     cell: ({ row }) => {
       const status = row.getValue("status") as string
       return (
-        <div
-          className={cn(
-            "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium uppercase",
-            status === "Pending"
-              ? "bg-amber-500/10 text-amber-500"
-              : status === "Approved"
-                ? "bg-emerald-500/10 text-emerald-500"
-                : "bg-red-500/10 text-red-500"
-          )}
-        >
-          {status}
-        </div>
+        <RequestStatusBadge status={status}></RequestStatusBadge>
       )
     },
   },
