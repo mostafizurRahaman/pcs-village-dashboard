@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/typography"
 import { User } from "@/types/user"
+import { userApi } from "@/api"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface DeleteUserPopupProps {
   open: boolean
@@ -29,15 +31,32 @@ export function DeleteUserPopup({
   onSuccess,
 }: DeleteUserPopupProps) {
   const [isDeleting, setIsDeleting] = useState(false)
+  const queryClient = useQueryClient()
 
   const handleDelete = async () => {
-    setIsDeleting(true)
-    setTimeout(() => {
-      toast.success(`User "${user?.name}" has been removed`)
+    try {
+      setIsDeleting(true)
+      const res = await userApi.delete(user?._id as string)
+      console.log(res)
+
+      if (res.success) {
+        toast.success(res.message)
+        if (onSuccess) {
+          onSuccess()
+        }
+        onOpenChange(!open)
+
+        queryClient.invalidateQueries({ queryKey: ["users"] })
+      } else {
+        toast.error(res.message)
+      }
       setIsDeleting(false)
-      onOpenChange(false)
-      onSuccess?.()
-    }, 1000)
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete user!")
+      setIsDeleting(false)
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   if (!user) return null
@@ -45,23 +64,26 @@ export function DeleteUserPopup({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="border-border bg-card rounded-xl p-6 max-w-sm"
+        className="max-w-sm rounded-xl border-border bg-card p-6"
         showCloseButton={false}
       >
         {/* Warning icon */}
-        <div className="flex justify-center mb-5">
+        <div className="mb-5 flex justify-center">
           <div className="rounded-full bg-destructive/10 p-4 ring-4 ring-destructive/5">
             <AlertTriangle className="h-8 w-8 text-destructive" />
           </div>
         </div>
 
-        <DialogHeader className="items-center text-center gap-2">
+        <DialogHeader className="items-center gap-2 text-center">
           <DialogTitle asChild>
             <Typography variant="Bold_H4" className="text-foreground">
               Delete User?
             </Typography>
           </DialogTitle>
-          <Typography variant="Regular_H7" className="text-muted-foreground leading-relaxed">
+          <Typography
+            variant="Regular_H7"
+            className="leading-relaxed text-muted-foreground"
+          >
             You are about to delete{" "}
             <span className="font-semibold text-foreground">{user.name}</span>.
             This will permanently revoke their access and cannot be undone.

@@ -13,12 +13,15 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Typography } from "@/components/typography"
 import { loginSchema, type LoginFormValues } from "@/schemas/auth"
 import { useRouter } from "next/navigation"
+import axiosInstance from "@/lib/axios"
+import { useAuth } from "@/hooks/use-auth"
 
 const inputCls =
   "h-11 border border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:border-primary"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
+  const { fetchMe } = useAuth()
 
   const {
     register,
@@ -26,20 +29,31 @@ export default function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "admin@gamil.com", password: "test123@PASS", rememberMe: false },
+    defaultValues: {
+      email: "dev.mostafiz04@gmail.com",
+      password: "test123@PASS",
+      rememberMe: false,
+    },
   })
 
   const router = useRouter()
 
   async function onSubmit(data: LoginFormValues) {
     try {
-      // TODO: replace with real API call
-      await new Promise((r) => setTimeout(r, 1000))
-      console.log("Login data:", data)
-      router.push("/dashboard")
-      toast.success("Signed in successfully!")
-    } catch {
-      toast.error("Invalid credentials. Please try again.")
+      const response = await axiosInstance.post("/auth/login", data)
+
+      if (response.data.success) {
+        await fetchMe()
+        // 1. Save access token
+        localStorage.setItem("accessToken", response.data.data.accessToken)
+
+        // 2. Redirect
+        router.push("/dashboard")
+        toast.success("Signed in successfully!")
+      }
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Invalid credentials"
+      toast.error(errorMsg)
     }
   }
 

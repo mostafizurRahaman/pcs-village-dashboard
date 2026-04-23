@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { lexend } from "@/fonts"
 import { cn } from "@/lib/utils"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { AuthProvider } from "@/components/auth-provider"
 
 /* ─────────────────────────────────────────────────────────────
    Root metadata — inherited by every page unless overridden
@@ -87,7 +88,9 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <TanstackQueryProvider>
-            <TooltipProvider>{children}</TooltipProvider>
+            <AuthProvider>
+              <TooltipProvider >{children}</TooltipProvider>
+            </AuthProvider>
           </TanstackQueryProvider>
         </ThemeProvider>
       </body>

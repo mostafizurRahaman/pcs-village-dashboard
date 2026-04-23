@@ -1,15 +1,20 @@
 export type User = {
-  id: string
+  _id: string
   name: string
   email: string
-  branch: string
-  dutyStation: string
-  pcsTimeline: string
-  lastLogin: string; 
-  role: string;
-  createdAt: string, 
-  image: string;   
-  verified: boolean
-  status: "Active" | "Blocked" | "Pending"
-  initial?: string
+  status: "active" | "blocked" | "pending"
+  role: string
+  profileImage: string
+  isTwoFactorEnabled: boolean
+  createdAt: string
+  branchName: string
+  branchId: string
+  affiliation: string
+  interestTags: string[]
+  kidsAgeRanges: string[]
+  estimatedPcsDate: string
+  futureStationName: string
+  futureStationId: string
+  currentStationName: string
+  currentStationId: string
 }

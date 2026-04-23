@@ -4,6 +4,8 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { preprocessSearch } from "@/components/data-table/utils"
 import { users } from "@/data/users"
 
+import { userApi } from "@/api"
+
 export function useUserData(
   page: number,
   pageSize: number,
@@ -13,41 +15,34 @@ export function useUserData(
   sortOrder: string
 ) {
   return useQuery({
-    queryKey: [
-      "users",
-      page,
-      pageSize,
-      preprocessSearch(search),
-      dateRange,
-      sortBy,
-      sortOrder,
-    ],
+    queryKey: ["users", page, pageSize, search, dateRange, sortBy, sortOrder],
     queryFn: async () => {
-      let filteredData = [...users];
-      
-      if (search) {
-        const lowerSearch = preprocessSearch(search);
-        filteredData = filteredData.filter(user => 
-          user.name.toLowerCase().includes(lowerSearch) ||
-          user.email.toLowerCase().includes(lowerSearch) ||
-          user.branch.toLowerCase().includes(lowerSearch)
-        );
-      }
+      const response = await userApi.getAll({
+        page,
+        limit: pageSize,
+        searchTerm: search || undefined,
+        fromDate: dateRange.from_date || undefined,
+        toDate: dateRange.to_date || undefined,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+      })
 
       return {
-        success: true,
-        data: filteredData,
+        success: response.success,
+        data: response.data,
         pagination: {
-          page: 1,
-          limit: 10,
-          totalPage: 1,
-          totalPages: filteredData.length,
+          page: response.meta.page,
+          limit: response.meta.limit,
+          totalPage: response.meta.totalPages,
+          totalItems: response.meta.total,
         },
       }
     },
     placeholderData: keepPreviousData,
   })
 }
+
+useUserData.isQueryHook = true
 
 // Add this property for the DataTable component
 useUserData.isQueryHook = true

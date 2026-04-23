@@ -30,7 +30,7 @@ export default function UsersPage() {
         </div>
 
         {/* Tabs & Reset */}
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {filters.map((filter) => (
               <Button
@@ -42,7 +42,7 @@ export default function UsersPage() {
               </Button>
             ))}
           </div>
-        </div>
+        </div> */}
 
         <Suspense fallback={<div className="text-white">Loading users...</div>}>
           <UsersTable />

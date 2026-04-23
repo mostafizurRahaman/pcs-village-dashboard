@@ -36,7 +36,7 @@ export function DataTableRowActions<TData>({
         >
           <Eye className="size-4.5" />
         </Button>
-        <Button
+        {/* <Button
           variant="ghost"
           size="icon"
           className="h-8 w-8 rounded-[6px] text-foreground hover:bg-muted"
@@ -46,14 +46,14 @@ export function DataTableRowActions<TData>({
           ) : (
             <CheckCircle2 className="size-4.5" />
           )}
-        </Button>
-        <Button
+        </Button> */}
+        {/* <Button
           variant="ghost"
           size="icon"
           className="h-8 w-8 rounded-[6px] text-foreground hover:bg-muted"
         >
           <UserX className="size-4.5" />
-        </Button>
+        </Button> */}
         <Button
           variant="ghost"
           size="icon"
