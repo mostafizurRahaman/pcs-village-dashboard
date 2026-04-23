@@ -1,7 +1,9 @@
+// app/(applicaiton)/subscriptions/utils/data-fetching.ts
 "use client"
+
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
+import { subscriptionApi } from "@/api/subscription.api"
 import { preprocessSearch } from "@/components/data-table/utils"
-import { subscriptions } from "@/data/subscription"
 
 export function useSubscriptionData(
   page: number,
@@ -13,7 +15,7 @@ export function useSubscriptionData(
 ) {
   return useQuery({
     queryKey: [
-      "subscriptions",
+      "subscription-history",
       page,
       pageSize,
       preprocessSearch(search),
@@ -22,26 +24,24 @@ export function useSubscriptionData(
       sortOrder,
     ],
     queryFn: async () => {
-      let filteredData = [...subscriptions]
-
-      if (search) {
-        const lowerSearch = preprocessSearch(search).toLowerCase()
-        filteredData = filteredData.filter(
-          (s) =>
-            s.name.toLowerCase().includes(lowerSearch) ||
-            s.email.toLowerCase().includes(lowerSearch) ||
-            s.id.toLowerCase().includes(lowerSearch)
-        )
-      }
+      const response = await subscriptionApi.getHistories({
+        page,
+        limit: pageSize,
+        searchTerm: search || undefined,
+        fromDate: dateRange.from_date || undefined,
+        toDate: dateRange.to_date || undefined,
+        sortBy: sortBy || "createdAt",
+        sortOrder: sortOrder || "desc",
+      })
 
       return {
-        success: true,
-        data: filteredData,
+        success: response.success,
+        data: response.data,
         pagination: {
-          page: 1,
-          limit: 10,
-          totalPage: 1,
-          totalPages: filteredData.length,
+          page: response.meta.page,
+          limit: response.meta.limit,
+          totalPage: response.meta.totalPages,
+          totalItems: response.meta.total,
         },
       }
     },

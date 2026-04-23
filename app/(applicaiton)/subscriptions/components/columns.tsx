@@ -1,27 +1,27 @@
+// app/(applicaiton)/subscriptions/components/columns.tsx
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/components/data-table/column-header"
 import { Typography } from "@/components/typography"
-import { ISubscription } from "@/types/subscription"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { cn } from "@/lib/utils"
-import { FileText, ExternalLink } from "lucide-react"
-import { PlanTypeBadge } from "@/components/batches/plan-type"
 import { SubscriptionStatusBadge } from "@/components/batches/subscription-status"
+import { formatDate } from "@/components/data-table/utils"
+import { ISubscriptionHistory } from "@/types/subscription-history"
 
-export const getColumns = (): ColumnDef<ISubscription>[] => [
+export const getColumns = (): ColumnDef<ISubscriptionHistory>[] => [
   {
-    accessorKey: "name",
+    accessorKey: "subscriberName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="SUBSCRIBER" />
     ),
     cell: ({ row }) => {
-      const name = row.getValue("name") as string
+      const name = row.original.subscriberName
+      const email = row.original.subscriberEmail
       return (
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9 border border-border">
             <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary uppercase">
-              {name.substring(0, 1)}
+              {name?.substring(0, 1)}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
@@ -29,7 +29,7 @@ export const getColumns = (): ColumnDef<ISubscription>[] => [
               {name}
             </Typography>
             <Typography variant="Regular_H7" className="text-muted-foreground">
-              {row.original.email}
+              {email}
             </Typography>
           </div>
         </div>
@@ -38,34 +38,41 @@ export const getColumns = (): ColumnDef<ISubscription>[] => [
     size: 250,
   },
   {
-    accessorKey: "planType",
+    accessorKey: "planName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="PLAN" />
     ),
-    cell: ({ row }) => <PlanTypeBadge type={row.getValue("planType")} />,
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        <Typography variant="Medium_H7">{row.getValue("planName")}</Typography>
+        <Typography variant="Regular_H7" className="text-muted-foreground">
+          ${row.original.planPrice} / {row.original.planInterval}
+        </Typography>
+      </div>
+    ),
   },
-
   {
-    accessorKey: "subscribedAt",
+    accessorKey: "currentPeriodStart",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="START DATE" />
     ),
     cell: ({ row }) => (
       <Typography variant="Regular_H7">
-        {row.getValue("subscribedAt")}
+        {formatDate(new Date(row.getValue("currentPeriodStart")))}
       </Typography>
     ),
   },
   {
-    accessorKey: "endDate",
+    accessorKey: "currentPeriodEnd",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="EXPIRY DATE" />
     ),
     cell: ({ row }) => (
-      <Typography variant="Regular_H7">{row.getValue("endDate")}</Typography>
+      <Typography variant="Regular_H7">
+        {formatDate(new Date(row.getValue("currentPeriodEnd")))}
+      </Typography>
     ),
   },
-
   {
     accessorKey: "status",
     header: ({ column }) => (
@@ -76,16 +83,12 @@ export const getColumns = (): ColumnDef<ISubscription>[] => [
     ),
   },
   {
-    accessorKey: "invoiceURL",
-    header: "INVOICE",
+    accessorKey: "eventType",
+    header: "EVENT",
     cell: ({ row }) => (
-      <a
-        href={row.original.invoiceURL}
-        className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-      >
-        <FileText className="size-4" />
-        <span>View</span>
-      </a>
+      <Typography variant="Medium_H7" className="text-xs uppercase text-muted-foreground">
+        {row.getValue("eventType")}
+      </Typography>
     ),
   },
 ]

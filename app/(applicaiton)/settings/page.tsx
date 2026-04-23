@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ContentLayout } from "@/components/navigation/content-layout"
 import { SettingsLayout } from "@/components/settings/settings-layout"
 import { Typography } from "@/components/typography"
@@ -8,25 +8,98 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { authApi } from "@/api/auth.api"
+import { useAuth } from "@/hooks/use-auth"
+import { toast } from "sonner"
 
 export default function ProfileSettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [fullName, setFullName] = useState("Admin User")
-  const [email, setEmail] = useState("admin@pcsvillage.com")
+  // Pull user from Zustand store + updater action
+  const { user, fetchMe, updateUser } = useAuth()
+
+  // ── Profile state ─────────────────────────────────────────────────────────
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [profileSaving, setProfileSaving] = useState(false)
+
+  // Seed form values once the user is available in the store
+  useEffect(() => {
+    if (!user) {
+      // If store hasn't hydrated yet, trigger a fresh fetch
+      fetchMe()
+      return
+    }
+    setFullName(user.name ?? "")
+    setEmail(user.email ?? "")
+    setPhotoUrl(user.profileImage ?? null)
+  }, [user]) // re-runs whenever the store user changes
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    setPhotoFile(file)
     setPhotoUrl(URL.createObjectURL(file))
   }
 
+  async function handleProfileSave() {
+    try {
+      setProfileSaving(true)
+      const res = await authApi.updateProfile({ name: fullName, profileImage: photoFile })
+      // Sync updated values back into the global store so user-nav reflects the change
+      updateUser({ name: res.data?.name ?? fullName, profileImage: res.data?.profileImage })
+      toast.success("Profile updated successfully!")
+      setPhotoFile(null)
+    } catch {
+      toast.error("Failed to update profile.")
+    } finally {
+      setProfileSaving(false)
+    }
+  }
+
+  // ── Password state ────────────────────────────────────────────────────────
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [passwordSaving, setPasswordSaving] = useState(false)
 
-  const inputCls = "h-10 border border-input bg-background text-foreground placeholder:text-muted-foreground text-sm"
+  async function handlePasswordUpdate() {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Please fill in all password fields.")
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("New password and confirm password do not match.")
+      return
+    }
+    try {
+      setPasswordSaving(true)
+      await authApi.changePassword({ oldPassword: currentPassword, newPassword })
+      toast.success("Password updated successfully!")
+      setCurrentPassword("")
+      setNewPassword("")
+      setConfirmPassword("")
+    } catch {
+      toast.error("Failed to update password. Check your current password and try again.")
+    } finally {
+      setPasswordSaving(false)
+    }
+  }
+
+  // Derive initials for the avatar fallback
+  const initials = fullName
+    ? fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "AD"
+
+  const inputCls =
+    "h-10 border border-input bg-background text-foreground placeholder:text-muted-foreground text-sm"
 
   return (
     <ContentLayout title="Settings">
@@ -57,7 +130,6 @@ export default function ProfileSettingsPage() {
 
               {/* Avatar row */}
               <div className="flex items-center gap-4">
-                {/* Avatar circle — bg-secondary = brand olive green in both modes */}
                 <div
                   className="h-20 w-20 rounded-full flex items-center justify-center shrink-0 overflow-hidden border-2 border-secondary"
                   style={{ backgroundColor: photoUrl ? undefined : "var(--color-secondary)" }}
@@ -74,7 +146,7 @@ export default function ProfileSettingsPage() {
                       className="text-secondary-foreground !text-[24px]"
                       as="span"
                     >
-                      AD
+                      {initials}
                     </Typography>
                   )}
                 </div>
@@ -98,7 +170,7 @@ export default function ProfileSettingsPage() {
                 </Button>
               </div>
 
-              {/* 2 × 2 field grid */}
+              {/* Field grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="profile-full-name">
@@ -126,7 +198,8 @@ export default function ProfileSettingsPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={inputCls}
+                    disabled
+                    className={`${inputCls} opacity-50 cursor-not-allowed`}
                   />
                 </div>
 
@@ -139,7 +212,7 @@ export default function ProfileSettingsPage() {
                   <Input
                     id="profile-role"
                     type="text"
-                    value="Admin"
+                    value={user?.role ?? "Admin"}
                     disabled
                     className={`${inputCls} opacity-50 cursor-not-allowed`}
                   />
@@ -149,9 +222,11 @@ export default function ProfileSettingsPage() {
               <div>
                 <Button
                   id="profile-save-changes"
+                  onClick={handleProfileSave}
+                  disabled={profileSaving}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-5 text-sm font-medium rounded-md"
                 >
-                  Save Changes
+                  {profileSaving ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </CardContent>
@@ -218,9 +293,11 @@ export default function ProfileSettingsPage() {
               <div>
                 <Button
                   id="update-password"
+                  onClick={handlePasswordUpdate}
+                  disabled={passwordSaving}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-5 text-sm font-medium rounded-md"
                 >
-                  Update Password
+                  {passwordSaving ? "Updating..." : "Update Password"}
                 </Button>
               </div>
             </CardContent>

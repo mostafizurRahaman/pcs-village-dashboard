@@ -11,17 +11,21 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/typography"
 import { resetPasswordSchema, type ResetPasswordFormValues } from "@/schemas/auth"
+import { useRouter } from "next/navigation"
+import { authApi } from "@/api/auth.api"
 
 const inputCls =
   "h-11 border border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:border-primary"
 
 export default function ResetPasswordForm() {
+  const router = useRouter()
   const [showNew, setShowNew] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -29,12 +33,22 @@ export default function ResetPasswordForm() {
   })
 
   async function onSubmit(data: ResetPasswordFormValues) {
+    const resetToken = sessionStorage.getItem("fp_resetToken") ?? ""
+    if (!resetToken) {
+      toast.error("Reset session expired. Please start over.")
+      router.replace("/forgot-password")
+      return
+    }
     try {
-      await new Promise((r) => setTimeout(r, 1000))
-      console.log("Reset password:", data)
+      await authApi.resetPassword({ resetToken, newPassword: data.newPassword })
       toast.success("Password reset successfully! Please sign in.")
-    } catch {
-      toast.error("Something went wrong. Please try again.")
+      // Clean up session data
+      sessionStorage.removeItem("fp_email")
+      sessionStorage.removeItem("fp_resetToken")
+      router.push("/login")
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || "Something went wrong. Please try again."
+      toast.error(msg)
     }
   }
 

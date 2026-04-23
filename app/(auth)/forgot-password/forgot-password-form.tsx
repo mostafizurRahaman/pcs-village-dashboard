@@ -10,8 +10,12 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/typography"
 import { forgotPasswordSchema, type ForgotPasswordFormValues } from "@/schemas/auth"
+import { useRouter } from "next/navigation"
+import { authApi } from "@/api/auth.api"
 
 export default function ForgotPasswordForm() {
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
@@ -23,11 +27,14 @@ export default function ForgotPasswordForm() {
 
   async function onSubmit(data: ForgotPasswordFormValues) {
     try {
-      await new Promise((r) => setTimeout(r, 1000))
-      console.log("Forgot password:", data)
+      await authApi.forgotPassword(data.email)
+      // Persist email so the OTP page can use it
+      sessionStorage.setItem("fp_email", data.email)
       toast.success("Verification code sent! Check your inbox.")
-    } catch {
-      toast.error("Something went wrong. Please try again.")
+      router.push("/otp-verification")
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || "Something went wrong. Please try again."
+      toast.error(msg)
     }
   }
 

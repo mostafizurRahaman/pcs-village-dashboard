@@ -1,16 +1,19 @@
-import { ISubscription } from "@/types/subscription"
+// app/(applicaiton)/subscriptions/utils/config.ts
+import { ISubscriptionHistory } from "@/types/subscription-history"
 import { useMemo, useCallback } from "react"
 
 export function useExportConfig() {
   const columnMapping = useMemo(
     () => ({
-      id: "ID",
-      name: "Subscriber Name",
-      email: "Email Address",
-      subscribedAt: "Start Date",
-      endDate: "End Date",
-      planType: "Plan Type",
+      _id: "History ID",
+      subscriberName: "Subscriber",
+      subscriberEmail: "Email",
+      planName: "Plan Name",
+      planPrice: "Price",
       status: "Status",
+      eventType: "Event",
+      currentPeriodStart: "Start Date",
+      currentPeriodEnd: "End Date",
     }),
     []
   )
@@ -21,8 +24,10 @@ export function useExportConfig() {
   )
 
   const transformFunction = useCallback(
-    (data: ISubscription) => ({
+    (data: ISubscriptionHistory) => ({
       ...data,
+      currentPeriodStart: new Date(data.currentPeriodStart).toLocaleDateString(),
+      currentPeriodEnd: new Date(data.currentPeriodEnd).toLocaleDateString(),
     }),
     []
   )
@@ -32,6 +37,6 @@ export function useExportConfig() {
     headers,
     entityName: "subscription_history",
     transformFunction,
-    columnWidths: Array(7).fill({ wch: 20 }),
+    columnWidths: Array(9).fill({ wch: 20 }),
   }
 }

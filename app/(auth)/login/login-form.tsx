@@ -43,11 +43,13 @@ export default function LoginForm() {
       const response = await axiosInstance.post("/auth/login", data)
 
       if (response.data.success) {
-        await fetchMe()
-        // 1. Save access token
+        // 1. Save access token FIRST so the axios interceptor can attach it
         localStorage.setItem("accessToken", response.data.data.accessToken)
 
-        // 2. Redirect
+        // 2. Hydrate the auth store (token is now available for /auth/me)
+        await fetchMe()
+
+        // 3. Redirect
         router.push("/dashboard")
         toast.success("Signed in successfully!")
       }
@@ -56,6 +58,7 @@ export default function LoginForm() {
       toast.error(errorMsg)
     }
   }
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -187,14 +190,14 @@ export default function LoginForm() {
       </form>
 
       {/* Footer link */}
-      <p className="text-center text-sm text-muted-foreground">
+      {/* <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
         <Link href="/signup">
           <span className="font-semibold text-secondary hover:underline">
             Create account
           </span>
         </Link>
-      </p>
+      </p> */}
     </div>
   )
 }

@@ -39,7 +39,7 @@ const planSchema = z.object({
   description: z.string().min(5, "Description is required."),
   price: z.preprocess(
     (val) => (val === "" ? undefined : Number(val)),
-    z.number({ invalid_type_error: "Price must be a number" }).min(1, "Price must be at least $1.")
+    z.number({ error: "Price must be a number" }).min(1, "Price must be at least $1.")
   ),
   currency: z.string().default("USD"),
   interval: z.enum(["MONTH", "YEAR"]),

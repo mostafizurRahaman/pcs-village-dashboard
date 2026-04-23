@@ -14,6 +14,7 @@ interface AuthStore {
   isAuthenticated: boolean
   isLoading: boolean
   setUser: (user: User | null) => void
+  updateUser: (partial: Partial<User>) => void
   fetchMe: () => Promise<void>
   logout: () => void
 }
@@ -23,6 +24,10 @@ export const useAuth = create<AuthStore>((set) => ({
   isAuthenticated: false,
   isLoading: true, // Start as true to prevent flickering
   setUser: (user) => set({ user, isAuthenticated: !!user, isLoading: false }),
+  updateUser: (partial) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, ...partial } : state.user,
+    })),
 
   fetchMe: async () => {
     try {

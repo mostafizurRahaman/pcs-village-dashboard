@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Shield } from "lucide-react"
@@ -10,12 +10,37 @@ import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/typography"
 import { cn } from "@/lib/utils"
 import { otpSchema, type OtpFormValues } from "@/schemas/auth"
+import { useRouter } from "next/navigation"
+import { authApi } from "@/api/auth.api"
 
 const OTP_LENGTH = 6
+const RESEND_COOLDOWN = 60 // seconds
 
 export default function OtpForm() {
+  const router = useRouter()
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""))
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  // Resend cooldown timer
+  const [cooldown, setCooldown] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  function startCooldown() {
+    setCooldown(RESEND_COOLDOWN)
+    timerRef.current = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
+  useEffect(() => {
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [])
 
   const {
     setValue,
@@ -55,12 +80,38 @@ export default function OtpForm() {
   }
 
   async function onSubmit(data: OtpFormValues) {
+    const email = sessionStorage.getItem("fp_email") ?? ""
+    if (!email) {
+      toast.error("Session expired. Please start over.")
+      router.replace("/forgot-password")
+      return
+    }
     try {
-      await new Promise((r) => setTimeout(r, 1000))
-      console.log("OTP verified:", data.otp)
+      const res = await authApi.verifyOtp({ email, otp: data.otp })
+      // Store resetToken for the next step
+      sessionStorage.setItem("fp_resetToken", res.data.resetToken)
       toast.success("Code verified! You may now reset your password.")
-    } catch {
-      toast.error("Invalid or expired code. Please try again.")
+      router.push("/reset-password")
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || "Invalid or expired code. Please try again."
+      toast.error(msg)
+    }
+  }
+
+  async function handleResend() {
+    const email = sessionStorage.getItem("fp_email") ?? ""
+    if (!email) {
+      toast.error("Session expired. Please start over.")
+      router.replace("/forgot-password")
+      return
+    }
+    try {
+      await authApi.resendOtp(email)
+      toast.success("OTP resent successfully!")
+      startCooldown()
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || "Failed to resend OTP."
+      toast.error(msg)
     }
   }
 
@@ -126,9 +177,19 @@ export default function OtpForm() {
       <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
         <p>
           Didn&apos;t receive the code?{" "}
-          <button type="button" className="font-semibold text-secondary hover:underline">
-            Resend OTP
-          </button>
+          {cooldown > 0 ? (
+            <span className="text-muted-foreground font-medium">
+              Resend in {cooldown}s
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={handleResend}
+              className="font-semibold text-secondary hover:underline"
+            >
+              Resend OTP
+            </button>
+          )}
         </p>
         <Link href="/forgot-password">
           <span className="text-muted-foreground hover:text-foreground hover:underline text-xs">

@@ -1,18 +1,19 @@
+// app/(applicaiton)/subscriptions/index.tsx
 "use client"
 import { DataTable } from "@/components/data-table/data-table"
 import { getColumns } from "./components/columns"
 import { useSubscriptionData } from "./utils/data-fetching"
 import { useExportConfig } from "./utils/config"
-import { ISubscription } from "@/types/subscription"
+import { ISubscriptionHistory } from "@/types/subscription-history"
 
 export default function SubscriptionTable() {
   const exportConfig = useExportConfig()
 
   return (
-    <DataTable<ISubscription, unknown>
+    <DataTable<ISubscriptionHistory, unknown>
       getColumns={getColumns}
       fetchDataFn={useSubscriptionData}
-      idField="id"
+      idField="_id" // Updated to match your JSON
       exportConfig={exportConfig}
       config={{
         enableRowSelection: false,
@@ -21,6 +22,8 @@ export default function SubscriptionTable() {
         enableUrlState: true,
         columnResizingTableId: "sub-history-table",
         searchPlaceholder: "Search by name, email or ID...",
+        defaultSortBy: 'createdAt',
+        defaultSortOrder: 'desc'
       }}
     />
   )

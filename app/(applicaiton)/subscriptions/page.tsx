@@ -17,7 +17,7 @@ export default function SubscriptionHistoryPage() {
           </Typography>
         </div>
 
-        <SubscriptionStats />
+        {/* <SubscriptionStats /> */}
 
         <Suspense
           fallback={

@@ -18,7 +18,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const isAuthPage =
       pathname.startsWith("/login") ||
       pathname.startsWith("/signup") ||
-      pathname.startsWith("/forgot-password")
+      pathname.startsWith("/forgot-password") ||
+      pathname.startsWith("/otp-verification") ||
+      pathname.startsWith("/reset-password")
 
     if (!isLoading && !isAuthenticated && !isAuthPage) {
       router.replace("/login")
