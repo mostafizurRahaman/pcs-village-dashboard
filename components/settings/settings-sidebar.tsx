@@ -12,21 +12,16 @@ const settingsNav = [
     label: "Profile Settings",
     icon: UserRound,
   },
-  // {
-  //   href: "/about-us",
-  //   label: "About Us",
-  //   icon: Info,
-  // },
-  // {
-  //   href: "/privacy-policy",
-  //   label: "Privacy Policy",
-  //   icon: Shield,
-  // },
-  // {
-  //   href: "/faq",
-  //   label: "FAQ",
-  //   icon: HelpCircle,
-  // },
+  {
+    href: "/about-us",
+    label: "About Us",
+    icon: Info,
+  },
+  {
+    href: "/privacy-policy",
+    label: "Privacy Policy",
+    icon: Shield,
+  },
 ]
 
 export function SettingsSidebar() {

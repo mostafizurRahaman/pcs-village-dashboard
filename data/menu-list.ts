@@ -88,6 +88,12 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [],
         },
         {
+          href: "/faqs",
+          label: "Faq",
+          icon: FlagIcon,
+          submenus: [],
+        },
+        {
           href: "/settings",
           label: "Settings",
           icon: Settings,
@@ -95,8 +101,8 @@ export function getMenuList(pathname: string): Group[] {
           active:
             pathname.startsWith("/settings") ||
             pathname.startsWith("/about-us") ||
-            pathname.startsWith("/privacy-policy") ||
-            pathname.startsWith("/faq"),
+            pathname.startsWith("/privacy-policy") 
+            // pathname.startsWith("/faq"),
         },
       ],
     },

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@plugin "@tailwindcss/typography";
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -172,49 +172,47 @@
   }
 
   /* Custom Swiper Styles to match Dark UI */
-.swiper-button-next, .swiper-button-prev {
-  color: #71717a !important; /* zinc-400 */
-  transform: scale(0.6);
-}
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #71717a !important; /* zinc-400 */
+    transform: scale(0.6);
+  }
 
-.swiper-pagination-bullet {
-  background: #3f3f46 !important; /* zinc-700 */
-}
+  .swiper-pagination-bullet {
+    background: #3f3f46 !important; /* zinc-700 */
+  }
 
-.swiper-pagination-bullet-active {
-  background: #3b82f6 !important; /* blue-500 */
-}
-/* Ensure Swiper doesn't overflow the Dialog */
-.attachment-swiper {
-  width: 100%;
-  padding-bottom: 35px !important; /* Space for pagination dots */
-}
+  .swiper-pagination-bullet-active {
+    background: #3b82f6 !important; /* blue-500 */
+  }
+  /* Ensure Swiper doesn't overflow the Dialog */
+  .attachment-swiper {
+    width: 100%;
+    padding-bottom: 35px !important; /* Space for pagination dots */
+  }
 
-.attachment-swiper .swiper-button-next,
-.attachment-swiper .swiper-button-prev {
-  background-color: rgba(0, 0, 0, 0.5);
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50%;
-  color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
+  .attachment-swiper .swiper-button-next,
+  .attachment-swiper .swiper-button-prev {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50%;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
-.attachment-swiper .swiper-button-next:after,
-.attachment-swiper .swiper-button-prev:after {
-  font-size: 14px !important;
-  font-weight: bold;
-}
+  .attachment-swiper .swiper-button-next:after,
+  .attachment-swiper .swiper-button-prev:after {
+    font-size: 14px !important;
+    font-weight: bold;
+  }
 
-.attachment-swiper .swiper-pagination-bullet {
-  background: #27272a !important; /* zinc-800 */
-  opacity: 1;
-}
+  .attachment-swiper .swiper-pagination-bullet {
+    background: #27272a !important; /* zinc-800 */
+    opacity: 1;
+  }
 
-.attachment-swiper .swiper-pagination-bullet-active {
-  background: #3b82f6 !important; /* blue-500 */
+  .attachment-swiper .swiper-pagination-bullet-active {
+    background: #3b82f6 !important; /* blue-500 */
+  }
 }
-  
-}
-
-

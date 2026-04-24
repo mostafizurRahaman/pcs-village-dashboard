@@ -22,6 +22,7 @@ export const getColumns = (): ColumnDef<IReport>[] => [
         {row.getValue("_id")}
       </Typography>
     ),
+    enableSorting: false
   },
   {
     accessorKey: "postId",
@@ -30,7 +31,8 @@ export const getColumns = (): ColumnDef<IReport>[] => [
     ),
     cell: ({ row }) =>  <Typography variant="Regular_H6" className="lowercase">
           {row.getValue("postId")}
-        </Typography>
+        </Typography>, 
+        enableSorting: false
   },
   {
     accessorKey: "postContent",
@@ -39,7 +41,8 @@ export const getColumns = (): ColumnDef<IReport>[] => [
     ),
     cell: ({ row }) =>  <Typography variant="Regular_H6" className="lowercase">
           {row.getValue("postContent")}
-        </Typography>
+        </Typography>,
+        enableSorting: false
   },
   {
   accessorKey: "postAttachments",
@@ -60,6 +63,7 @@ export const getColumns = (): ColumnDef<IReport>[] => [
 
     return <AttachmentModal attachmentUrls={attachments} />;
   },
+  enableSorting: false
 },
 
   {
@@ -69,7 +73,8 @@ export const getColumns = (): ColumnDef<IReport>[] => [
     ),
     cell: ({ row }) =>  <Typography variant="Regular_H6" className="lowercase">
           {row.getValue("authorId")}
-        </Typography>
+        </Typography>,
+        enableSorting: false
   },
 
   {
@@ -122,7 +127,8 @@ export const getColumns = (): ColumnDef<IReport>[] => [
     ),
     cell: ({ row }) =>  <Typography variant="Regular_H6" className="lowercase">
           {row.getValue("reportReason")}
-        </Typography>
+        </Typography>,
+      enableSorting: false
   },
   {
     accessorKey: "isGroup",
@@ -138,6 +144,7 @@ export const getColumns = (): ColumnDef<IReport>[] => [
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => <RequestStatusBadge status={row.original.status}/>
+
   },
  
   {
@@ -160,5 +167,6 @@ export const getColumns = (): ColumnDef<IReport>[] => [
       <DataTableColumnHeader column={column} title="ACTIONS" />
     ),
     cell: ({ row, table }) => <DataTableRowActions row={row} table={table} />,
+    enableSorting: false
       },
 ]
