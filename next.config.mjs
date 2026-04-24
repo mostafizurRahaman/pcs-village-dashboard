@@ -9,6 +9,12 @@ const nextConfig = {
                 port: '',
                 pathname: '/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'trustedhandyman-prod-001.s3.af-south-1.amazonaws.com',
+                port: '',
+                pathname: '/**',
+            },
         ],
     },
 }

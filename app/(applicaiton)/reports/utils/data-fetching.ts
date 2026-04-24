@@ -2,8 +2,9 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { preprocessSearch } from "@/components/data-table/utils"
 import { subscriptions } from "@/data/subscription"
+import { reportApi } from "@/api/report.api";
 
-export function useSubscriptionData(
+export function useReportData(
   page: number,
   pageSize: number,
   search: string,
@@ -13,7 +14,7 @@ export function useSubscriptionData(
 ) {
   return useQuery({
     queryKey: [
-      "subscriptions",
+      "reports",
       page,
       pageSize,
       preprocessSearch(search),
@@ -22,31 +23,29 @@ export function useSubscriptionData(
       sortOrder,
     ],
     queryFn: async () => {
-      let filteredData = [...subscriptions]
-
-      if (search) {
-        const lowerSearch = preprocessSearch(search).toLowerCase()
-        filteredData = filteredData.filter(
-          (s) =>
-            s.name.toLowerCase().includes(lowerSearch) ||
-            s.email.toLowerCase().includes(lowerSearch) ||
-            s.id.toLowerCase().includes(lowerSearch)
-        )
-      }
-
-      return {
-        success: true,
-        data: filteredData,
-        pagination: {
-          page: 1,
-          limit: 10,
-          totalPage: 1,
-          totalPages: filteredData.length,
-        },
-      }
-    },
+         const response = await reportApi.getAll({
+           page,
+           limit: pageSize,
+           searchTerm: search || undefined,
+           fromDate: dateRange.from_date || undefined,
+           toDate: dateRange.to_date || undefined,
+           sortBy: sortBy,
+           sortOrder: sortOrder,
+         })
+   
+         return {
+           success: response.success,
+           data: response.data,
+           pagination: {
+             page: response.meta.page,
+             limit: response.meta.limit,
+             totalPage: response.meta.totalPages,
+             totalItems: response.meta.total,
+           },
+         }
+       },
     placeholderData: keepPreviousData,
   })
 }
 
-useSubscriptionData.isQueryHook = true
+useReportData.isQueryHook = true

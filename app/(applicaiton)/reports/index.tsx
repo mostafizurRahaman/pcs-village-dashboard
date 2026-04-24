@@ -2,18 +2,15 @@
 import { DataTable } from "@/components/data-table/data-table"
 import { getColumns } from "./components/columns"
 import { IReport } from "@/types/reports"
-import { reports } from "@/data/reports"
+import { useReportData } from "./utils/data-fetching"
+
 
 export default function ReportsTable() {
   return (
     <DataTable<IReport, unknown>
       getColumns={getColumns}
-      fetchDataFn={async () => ({
-        success: true,
-        data: reports,
-        pagination: { page: 1, limit: 10, total_pages: 1, total_items: 4 },
-      })}
-      idField="id"
+      fetchDataFn={useReportData}
+      idField="_id"
       exportConfig={{
         entityName: "reports",
         columnMapping: {},
@@ -26,6 +23,8 @@ export default function ReportsTable() {
         enableColumnVisibility: true,
         enableUrlState: true,
         columnResizingTableId: "reports-table",
+        defaultSortBy: "reportedAt", 
+        defaultSortOrder: 'desc'
       }}
     />
   )
