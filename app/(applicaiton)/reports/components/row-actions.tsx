@@ -2,9 +2,10 @@
 import * as React from "react"
 import { Row, Table } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { Trash2, Ban } from "lucide-react"
-import { ResolveReportModal, BlockUserModal } from "./actions/moderation-modals"
+import { Trash2, Ban, CheckCircle } from "lucide-react"
+import { ApprovReportModal, BlockUserModal } from "./actions/approval-modal"
 import { IReport } from "@/types/reports"
+import { RejectionModal } from "./actions/rejection-modal"
 
 export function DataTableRowActions<TData>({
   row,
@@ -24,9 +25,9 @@ export function DataTableRowActions<TData>({
           variant="ghost"
           size="icon"
           onClick={() => setResolveOpen(true)}
-          className="h-8 w-8 text-red-500 hover:bg-red-50"
+          className="h-8 w-8 text-green-500 hover:text-green-300"
         >
-          <Trash2 className="size-4.5" />
+          <CheckCircle className="size-4.5" />
         </Button>
         <Button
           variant="ghost"
@@ -37,16 +38,16 @@ export function DataTableRowActions<TData>({
           <Ban className="size-4.5" />
         </Button>
       </div>
-      <ResolveReportModal
+      <ApprovReportModal
         open={resolveOpen}
         onOpenChange={setResolveOpen}
         report={report}
         onSuccess={() => table.resetRowSelection()}
       />
-      <BlockUserModal
+      <RejectionModal
         open={blockOpen}
         onOpenChange={setBlockOpen}
-        user={report.reportedUser}
+        report={report}
         onSuccess={() => table.resetRowSelection()}
       />
     </>

@@ -54,11 +54,10 @@ export default function LoginForm() {
         toast.success("Signed in successfully!")
       }
     } catch (error: any) {
-      const errorMsg = error.response?.data?.message || "Invalid credentials"
+      const errorMsg = error.response?.data?.message || "Failed to login!"
       toast.error(errorMsg)
     }
   }
-
 
   return (
     <div className="flex flex-col gap-8">

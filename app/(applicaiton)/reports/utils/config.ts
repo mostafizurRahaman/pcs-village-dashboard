@@ -1,16 +1,22 @@
+import { IReport } from "@/types/reports"
 import { ISubscription } from "@/types/subscription"
 import { useMemo, useCallback } from "react"
 
 export function useExportConfig() {
   const columnMapping = useMemo(
     () => ({
-      id: "ID",
-      name: "Subscriber Name",
-      email: "Email Address",
-      subscribedAt: "Start Date",
-      endDate: "End Date",
-      planType: "Plan Type",
-      status: "Status",
+      _id: "Report ID",  
+      postId: "Post ID",
+      postContent: "Post Content",
+      postAttachments: "Post Attachment",      
+      authorId: "Author ID",
+      authorName: "Author Name",
+      reporterName: "Reporter Name", 
+      reporterEmail:"Reporter Email", 
+      reportReason: "Reporter Reason",
+      isGroup: "Is Group",
+      status: "Status", 
+      reportedAt: "Reported At"
     }),
     []
   )
@@ -21,8 +27,19 @@ export function useExportConfig() {
   )
 
   const transformFunction = useCallback(
-    (data: ISubscription) => ({
-      ...data,
+    (data: IReport) => ({
+      _id: data._id,
+      postId: data.postId,
+      postContent: data.postContent,
+      postAttachments: data.postAttachments,      
+      authorId: data.authorId,
+      authorName: data.authorName,
+      reporterName: data.reporterName, 
+      reporterEmail: data.reporterEmail, 
+      reportReason: data.reportReason,
+      isGroup: data.isGroup,
+      status: data.status, 
+      reportedAt: data.reportedAt
     }),
     []
   )
@@ -30,8 +47,23 @@ export function useExportConfig() {
   return {
     columnMapping,
     headers,
-    entityName: "subscription_history",
+    entityName: "reports",
     transformFunction,
-    columnWidths: Array(7).fill({ wch: 20 }),
+    columnWidths: [
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 50 },
+    ],
   }
 }
+
