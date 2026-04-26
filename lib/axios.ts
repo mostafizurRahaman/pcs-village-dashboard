@@ -3,7 +3,8 @@ import { toast } from "sonner"
 
 // Create the axios instance
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1",
+  baseURL:
+    process.env.NEXT_PUBLIC_API_URL || "http://16.171.204.102:5000/api/v1",
   headers: {
     "Content-Type": "application/json",
   },

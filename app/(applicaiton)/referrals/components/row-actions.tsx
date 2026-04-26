@@ -3,10 +3,7 @@ import * as React from "react"
 import { Row, Table } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Check, X } from "lucide-react"
-import {
-  ApproveRequestModal,
-
-} from "./actions/approval-modal"
+import { ApproveRequestModal } from "./actions/approval-modal"
 import { IBaseRequest } from "@/types/base-request"
 import { Typography } from "@/components/typography"
 import { RejectRequestModal } from "./actions/rejection-modal"
@@ -22,7 +19,7 @@ export function DataTableRowActions<TData>({
   const [rejectOpen, setRejectOpen] = React.useState(false)
   const request = row.original as IBaseRequest
 
-  if (request.status !== "Pending") {
+  if (request.status !== "PENDING") {
     return (
       <Typography
         variant="Regular_H7"
