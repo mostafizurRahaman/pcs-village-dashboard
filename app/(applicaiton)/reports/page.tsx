@@ -14,7 +14,7 @@ export default function ReportsPage() {
             Review and manage community reports
           </Typography>
         </div>
-        <ReportStats />
+        {/* <ReportStats /> */}
         <Suspense
           fallback={
             <div className="text-muted-foreground italic">

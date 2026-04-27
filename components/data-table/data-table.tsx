@@ -1423,12 +1423,12 @@ export function DataTable<TData extends ExportableData, TValue>({
               // Loading state
               Array.from({ length: pageSize }).map((_, i) => (
                 <TableRow
-                  key={`loading-row-${uuid}`}
+                  key={`loading-row-${i}`}
                   tabIndex={-1}
                 >
-                  {Array.from({ length: columns.length }).map((_, j, array) => (
+                  {Array.from({ length: columns.length }).map((_, j) => (
                     <TableCell
-                      key={`skeleton-cell-${uuid}`}
+                      key={`skeleton-cell-${i}-${j}`}
                       className="max-w-0 truncate px-4 py-2 text-left"
                       tabIndex={-1}
                     >

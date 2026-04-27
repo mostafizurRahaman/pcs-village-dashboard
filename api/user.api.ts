@@ -1,5 +1,43 @@
 import axiosInstance from "@/lib/axios"
 
+export type WeekType = "this_week" | "last_week"
+
+export interface DashboardStatsPayload {
+  year: number
+  weekType: WeekType
+}
+
+export interface DashboardCards {
+  totalUsers: number
+  activeUsers: number
+  totalPosts: number
+  totalGroups: number
+  messagesSent: number
+  totalConversations: number
+}
+
+export interface UserGrowthItem {
+  month: string
+  count: number
+}
+
+export interface DailyActiveItem {
+  day: string
+  count: number
+}
+
+export interface DashboardStatsData {
+  cards: DashboardCards
+  userGrowth: UserGrowthItem[]
+  dailyActiveUsers: DailyActiveItem[]
+}
+
+export interface DashboardStatsResponse {
+  success: boolean
+  message: string
+  data: DashboardStatsData
+}
+
 export const userApi = {
   /**
    * Get all users with full filter support
@@ -46,6 +84,15 @@ export const userApi = {
     payload: { status?: string; verified?: boolean }
   ) => {
     const response = await axiosInstance.patch(`/users/${id}`, payload)
+    return response.data
+  },
+
+  /**
+   * Get dashboard stats (cards + charts)
+   * POST /users/stats
+   */
+  getStats: async (payload: DashboardStatsPayload): Promise<DashboardStatsResponse> => {
+    const response = await axiosInstance.get("/users/stats", { params: payload })
     return response.data
   },
 }
