@@ -17,6 +17,7 @@ import {
     TooltipProvider
 } from "@/components/ui/tooltip";
 import { LogoutModal } from "@/components/navigation/logout-modal";
+import { useAuth } from "@/hooks/use-auth";
 
 interface MenuProps {
     isOpen: boolean | undefined;
@@ -26,6 +27,7 @@ export function Menu({ isOpen }: MenuProps) {
     const pathname = usePathname();
     const menuList = getMenuList(pathname);
     const [logoutOpen, setLogoutOpen] = useState(false);
+    const {  logout } = useAuth()
 
     return (
         <>
@@ -166,6 +168,7 @@ export function Menu({ isOpen }: MenuProps) {
             <LogoutModal
                 open={logoutOpen}
                 onOpenChange={setLogoutOpen}
+                onConfirm={() => logout()}
             />
         </>
     );
